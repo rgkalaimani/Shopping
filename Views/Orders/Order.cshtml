@@ -1,0 +1,427 @@
+﻿
+@model List<ShoppingApplication.Models.Viewmodel.Product>
+@{
+    ViewBag.Title = "Order";
+    Layout = "~/Views/Shared/_ShoppingLayout.cshtml";
+}
+
+
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KUPCO | Products</title>
+
+    @*<link rel="apple-touch-icon"
+          sizes="180x180"
+          href="~/content/assets/fav/apple-touch-icon.png" />
+    <link rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="~/content/assets/fav/favicon-32x32.png" />
+    <link rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="~/content/assets/fav/favicon-16x16.png" />
+    <link rel="manifest" href="~/content/assets/fav/site.webmanifest" />*@
+
+    @*<link id="css-ltr"
+        rel="stylesheet"
+        href="~/content/assets/css/bootstrap.min.css" />*@
+    <!-- Keep linkBootstrap for dynamic language -->
+    <link rel="stylesheet" href="/" id="linkBootstrap" />
+    @*<link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+          integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />*@
+    <link id="pagestyle" href="../content/assets/css/dashboard.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../content/assets/css/custom.css" />
+    <link rel="stylesheet" href="../content/assets/css/site.css" />
+
+    <script>
+        var tempQuery = null;//new URLSearchParams(document.location.search);
+    </script>
+
+    <script src="../Scripts/appsettings.js"></script>
+    <script src="../content/assets/js/jquery-3.6.3.min.js"></script>
+    <script src="../content/assets/js/bootstrap.min.js"></script>
+    <script src="../content/assets/js/app-data.js"></script>
+    <script src="../content/assets/js/lang.js"></script>
+    <script src="../content/assets/js/site.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+
+            ///var jstr = '[{ "productId": "5", "count": "1", "productType": "frozen", "price": "1", "priceLbl": "1", "productName": "Chicken Thigh" }, { "productId": "6", "count": "1", "productType": "frozen", "price": "1", "priceLbl": "1", "productName": "Chicken Legs" }, { "productId": "7", "count": "1", "productType": "frozen", "price": "1", "priceLbl": "1", "productName": "Chicken Drumsticks" }, { "productId": "11", "count": "1", "productType": "fresh" }, { "productId": "12", "count": "1", "productType": "fresh" }, { "productId": "13", "count": "1", "productType": "fresheggs" }, { "productId": "14", "count": "1", "productType": "fresheggs" }]';
+
+
+            $('html').attr('lang', $('#hdnLang').val());
+            $('html').attr('dir', $('#hdnDir').val());
+
+
+            $('.addprod').click(function () {
+                var prodId = ($(this).attr("productid"));
+                var counterId = "count_" + prodId;
+                var prodCount = $('#' + counterId).text();
+                $('#' + counterId).text(parseInt(prodCount) + 1);
+            });
+
+            $('.minusprod').click(function () {
+                var prodId = ($(this).attr("productid"));
+                var counterId = "count_" + prodId;
+                var prodCount = $('#' + counterId).text();
+                if (parseInt(prodCount) > 1) {
+                    $('#' + counterId).text(parseInt(prodCount) - 1);
+                }
+
+            });
+
+
+
+            $('.buyProduct').click(function () {
+
+
+                console.log(this);
+
+                console.log($(this).parent());
+
+                var parentDiv = $(this).parent();
+
+                if ($(parentDiv).hasClass('active') == false) {
+
+                    $(parentDiv).addClass('active');
+                    $(parentDiv).addClass('selectedprod');
+                } else {
+
+                    var prodId = ($(this).attr("productid"));
+                    var counterId = "count_" + prodId;
+                    $('#' + counterId).text(0);
+
+                    $(parentDiv).removeClass('active');
+                    $(parentDiv).removeClass('selectedprod');
+                }
+
+
+            });
+
+
+            $('.nextpage').click(function () {
+
+                var prodtemp = [];
+
+                var productList = $('.selectedprod');
+
+                if (productList.length == 0) {
+
+                    alert("Select product");
+                    return false;
+
+                }
+
+                for (var i = 0; i < productList.length; i++) {
+                    var prodId = $(productList[i]).attr("productid");
+                    var prodIdCount = $('#count_' + prodId).text();
+                    // alert(prodIdCount);
+                    var prod = {
+                        "productId": $(productList[i]).attr("productid"), "count": $('#count_' + prodId).text(), "productType": $(productList[i]).attr("producttype"),
+                        "price": $(productList[i]).attr("price"), "priceLbl": $(productList[i]).attr("pricelbl"), "productName": $(productList[i]).attr("productName")
+                    };
+                    prodtemp.push(prod);
+                }
+
+
+
+                console.log(prodtemp);
+                localStorage.setItem("selectedprodlist", JSON.stringify(prodtemp));
+                window.location.href = "../Customer/Home";
+
+            });
+
+
+        });
+
+        function buyProduct(objid, status) {
+
+            console.log(document.getElementById('hdnSelected'));
+
+            console.log(document.getElementById('hdnSelected').Value);
+
+            if (document.getElementById('hdnSelected').Value != null) {
+
+                document.getElementById('hdnSelected').Value = document.getElementById('hdnSelected').Value + ";" + objid + "," + status;
+
+            }
+            else {
+                document.getElementById('hdnSelected').Value = + objid + "," + status;
+            }
+
+
+
+            window.localStorage.setItem("selectedItem", document.getElementById('hdnSelected').Value);
+
+        }
+
+        function navigate() {
+
+            $.cookie('description', description);
+
+
+
+
+
+            ///window.location.href = "../customer/home?dt=" + document.getElementById('hdnSelected').Value;
+        }
+
+
+    </script>
+</head>
+
+<body>
+    <main class="main-content position-relative border-radius-lg">
+        
+        
+
+        <input type="hidden" id="hdnSelected" />
+        <div class="container-fluid py-4">
+            <section class="">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="page-content">
+                            <div>
+                                <ul class="nav nav-pills mb-3 p-2" id="pills-tab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active"
+                                                id="pills-frozen-tab"
+                                                data-bs-toggle="pill"
+                                                data-bs-target="#pills-frozen"
+                                                type="button"
+                                                role="tab"
+                                                aria-controls="pills-frozen"
+                                                aria-selected="true">
+                                            Frozen Products
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link"
+                                                id="pills-fresh-tab"
+                                                data-bs-toggle="pill"
+                                                data-bs-target="#pills-fresh"
+                                                type="button"
+                                                role="tab"
+                                                aria-controls="pills-fresh"
+                                                aria-selected="false">
+                                            Fresh Products
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link"
+                                                id="pills-egg-tab"
+                                                data-bs-toggle="pill"
+                                                data-bs-target="#pills-egg"
+                                                type="button"
+                                                role="tab"
+                                                aria-controls="pills-egg"
+                                                aria-selected="false">
+                                            Fresh Eggs
+                                        </button>
+                                    </li>
+                                </ul>
+                                <hr />
+                                @if (Model != null)
+                                {
+                                    var frozenList = Model.Where(x => x.ProductType.ToLower() == "frozen").ToList();
+                                    var freshProduct = Model.Where(x => x.ProductType.ToLower() == "fresh").ToList();
+                                    var freshEggs = Model.Where(x => x.ProductType.ToLower() == "fresheggs").ToList();
+
+
+                                    <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade show active"
+                                             id="pills-frozen"
+                                             role="tabpanel"
+                                             aria-labelledby="pills-home-tab"
+                                             tabindex="0">
+                                            <div id="divFrozenItems" class="items">
+
+
+                                                @if (frozenList.Count > 0)
+                                                {
+                                                    foreach (var item in frozenList)
+                                                    {
+                                                        <div id="fz1" producttype="frozen" price="@item.Price" pricelbl="@item.priceLbl" productName="@item.Name" productid="@item.Id" class="item my-5 my-md-1 rounded row">
+                                                            <div class="col-3 text-center">
+                                                                <img src="~/Content/general/img/white/@item.img" alt="product">
+                                                            </div>
+                                                            <div class="col-7 my-auto">
+                                                                <h4>@item.Name</h4>
+                                                                <p class="text-secondary small">@item.Description </p>
+
+                                                                <div class="col-4 col-md-4 my-auto py-2">
+                                                                    <span class="amount">@item.Price @item.priceLbl  </span>
+                                                                </div>
+                                                                <div class="my-0">
+                                                                    <div class="row">
+                                                                        <div class="col-8 col-md-4">
+                                                                            <div class="counter-container">
+                                                                                <div class="button ccol ccol-1 minusprod" productid="@item.Id">
+                                                                                    <input type="button" id="minus-btn" value="-" />
+                                                                                </div>
+                                                                                <div class="number ccol ccol-2">
+                                                                                    <h2 id="count_@item.Id" class="count">1</h2>
+                                                                                </div>
+                                                                                <div class="button ccol ccol-1 addprod" productid="@item.Id">
+                                                                                    <input type="button" id="plus-btn" value="+" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div productid="@item.Id" producttype="frozen" sts="pending" class="buyProduct col-2 text-center my-auto text-secondary text-opacity-50">
+                                                                <span>
+                                                                    <i class="fa fs-4 fa-check-circle d-none"></i>
+                                                                    <i class="bi bi-bag-check-fill fs-4"></i>
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-12"></div>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane fade"
+                                             id="pills-fresh"
+                                             role="tabpanel"
+                                             aria-labelledby="pills-profile-tab"
+                                             tabindex="0">
+                                            <div id="divFreshItems" class="items">
+
+                                                @if (freshProduct.Count > 0)
+                                                {
+                                                    foreach (var item in freshProduct)
+                                                    {
+                                                        <div id="fz1" producttype="fresh" price="@item.Price" pricelbl="@item.priceLbl" productName="@item.Name" productid="@item.Id" class="item my-5 my-md-1 rounded row">
+                                                            <div class="col-3 text-center">
+                                                                <img src="../Content/general/img/white/@item.img" alt="product">
+                                                            </div>
+                                                            <div class="col-7 my-auto">
+                                                                <h4>@item.Name                                                               </h4>
+                                                                <p class="text-secondary small">@item.Description </p>
+
+                                                                <div class="col-4 col-md-4 my-auto py-2">
+                                                                    <span class="amount">@item.Price @item.priceLbl  </span>
+                                                                </div>
+
+                                                                <div class="my-0">
+                                                                    <div class="row">
+                                                                        <div class="col-8 col-md-4">
+                                                                            <div class="counter-container">
+                                                                                <div class="button ccol ccol-1 minusprod" productid="@item.Id">
+                                                                                    <input type="button" id="minus-btn" value="-" />
+                                                                                </div>
+                                                                                <div class="number ccol ccol-2">
+                                                                                    <h2 id="count_@item.Id" class="count">1</h2>
+                                                                                </div>
+                                                                                <div class="button ccol ccol-1 addprod" productid="@item.Id">
+                                                                                    <input type="button" id="plus-btn" value="+" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div productid="@item.Id" producttype="fresh" sts="accepted" class="buyProduct col-2 text-center my-auto text-secondary text-opacity-50">
+                                                                <span>
+                                                                    <i class="fa fs-4 fa-check-circle d-none"></i>
+                                                                    <i class="bi bi-bag-check-fill fs-4"></i>
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-12"></div>
+                                                        </div>
+                                                    }
+                                                }
+
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade"
+                                             id="pills-egg"
+                                             role="tabpanel"
+                                             aria-labelledby="pills-contact-tab"
+                                             tabindex="0">
+                                            <div id="divEggItems" class="items">
+
+                                                @if (freshEggs.Count > 0)
+                                                {
+                                                    foreach (var item in freshEggs)
+                                                    {
+                                                        <div id="fz1" producttype="fresheggs" price="@item.Price" pricelbl="@item.priceLbl" productName="@item.Name" productid="@item.Id" class="item my-5 my-md-1 rounded row">
+                                                            <div class="col-3 text-center">
+                                                                <img src="~/Content/general/img/white/@item.img" alt="product">
+                                                            </div>
+                                                            <div class="col-7 my-auto">
+                                                                <h4>@item.Name  </h4>
+                                                                <p class="text-secondary small">@item.Description </p>
+                                                                <div class="col-4 col-md-4 my-auto py-2">
+                                                                    <span class="amount">@item.Price @item.priceLbl  </span>
+                                                                </div>
+                                                                <div class="my-0">
+                                                                    <div class="row">
+                                                                        <div class="col-8 col-md-4">
+                                                                            <div class="counter-container">
+                                                                                <div class="button ccol ccol-1 minusprod" productid="@item.Id">
+                                                                                    <input type="button" id="minus-btn" value="-" />
+                                                                                </div>
+                                                                                <div class="number ccol ccol-2">
+                                                                                    <h2 id="count_@item.Id" class="count">1</h2>
+                                                                                </div>
+                                                                                <div class="button ccol ccol-1 addprod" productid="@item.Id">
+                                                                                    <input type="button" id="plus-btn" value="+" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div productid="@item.Id" producttype="fresheggs" sts="completed" class="buyProduct col-2 text-center my-auto text-secondary text-opacity-50">
+                                                                <span>
+                                                                    <i class="fa fs-4 fa-check-circle d-none"></i>
+                                                                    <i class="bi bi-bag-check-fill fs-4"></i>
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-12"></div>
+                                                        </div>
+                                                    }
+                                                }
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                }
+
+                                <div class="bg-white">
+                                    <div class="container">
+                                        <div class="d-flex my-4 nextpage">
+                                            <a class="btn btn-primary w-100">
+                                                Continue <i class="bi bi-arrow-right fs-5 mx-2"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+</body>
+</html>
+
+
+

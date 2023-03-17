@@ -1,0 +1,773 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KUPCO | Order</title>
+
+    <link rel="apple-touch-icon"
+          sizes="180x180"
+          href="../Content/general/fav/apple-touch-icon.png" />
+    <link rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="../Content/general/fav/favicon-32x32.png" />
+    <link rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="../Content/general/fav/favicon-16x16.png" />
+    <link rel="manifest" href="../Content/general/fav/site.webmanifest" />
+
+    <link id="css-ltr" rel="stylesheet" href="../Content/general/css/bootstrap.min.css" />
+    <!-- Keep linkBootstrap for dynamic language -->
+    <link rel="stylesheet" href="/" id="linkBootstrap">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+          integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="../Content/general/css/site.css" />
+
+    <style>
+        .payment-container {
+            display: block;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+            .payment-container header {
+                margin-bottom: 40px;
+                text-align: center;
+            }
+
+                .payment-container header h2 {
+                    font-size: 24px;
+                    line-height: 24px;
+                }
+
+                .payment-container header h3 {
+                    font-size: 16px;
+                    font-weight: 300;
+                }
+
+            .payment-container .payment-item {
+                background: linear-gradient(#fbfbfb 0%, #f0f0f0 100%);
+                border: 1px solid #dcdcdc;
+                border-radius: 5px;
+                display: block;
+                margin: 0 0 20px;
+                padding: 40px;
+                width: 100%;
+            }
+
+                .payment-container .payment-item:after {
+                    clear: both;
+                    content: "";
+                    display: table;
+                }
+
+                .payment-container .payment-item .item-title,
+                .payment-container .payment-item .item-options {
+                    display: inline-block;
+                    margin-right: -4px;
+                    position: relative;
+                    vertical-align: top;
+                }
+
+                .payment-container .payment-item .item-title {
+                    font-weight: 600;
+                    width: 40%;
+                }
+
+                    .payment-container .payment-item .item-title span {
+                        color: #d0021b;
+                    }
+
+                .payment-container .payment-item .item-options {
+                    width: 60%;
+                }
+
+                    .payment-container .payment-item .item-options .selection {
+                        cursor: pointer;
+                        display: block;
+                        position: relative;
+                        width: 100%;
+                    }
+
+                        .payment-container .payment-item .item-options .selection .check,
+                        .payment-container .payment-item .item-options .selection label {
+                            transition: 250ms ease all;
+                        }
+
+                        .payment-container .payment-item .item-options .selection .check {
+                            background: #fff;
+                            border: 1px solid #d2d2d2;
+                            border-radius: 100px;
+                            content: "";
+                            height: 14px;
+                            left: 10px;
+                            position: absolute;
+                            top: 18px;
+                            width: 14px;
+                        }
+
+                        .payment-container .payment-item .item-options .selection label {
+                            background: #f7f7f7;
+                            border: 1px solid #d2d2d2;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            display: block;
+                            margin: 0 0 10px 0;
+                            padding: 10px 10px 10px 30px;
+                            position: relative;
+                            width: 100%;
+                        }
+
+                            .payment-container .payment-item .item-options .selection label:hover {
+                                background: #fff;
+                            }
+
+                        .payment-container .payment-item .item-options .selection span {
+                            float: right;
+                        }
+
+                    .payment-container .payment-item .item-options input {
+                        display: none;
+                    }
+
+                        .payment-container .payment-item .item-options input.form-control {
+                            display: block;
+                        }
+
+                        .payment-container
+                        .payment-item
+                        .item-options
+                        input[type="radio"]:checked ~ .check {
+                            border-color: #000;
+                        }
+
+                            .payment-container
+                            .payment-item
+                            .item-options
+                            input[type="radio"]:checked ~ .check:before {
+                                background: #000;
+                                border-radius: 100px;
+                                content: "";
+                                height: 6px;
+                                left: 3px;
+                                position: absolute;
+                                top: 3px;
+                                width: 6px;
+                            }
+
+                        .payment-container
+                        .payment-item
+                        .item-options
+                        input[type="radio"]:checked ~ label {
+                            background: linear-gradient(#8e8e8e 0%, #555 100%);
+                            border-color: #000;
+                            color: #fff;
+                        }
+
+        @@media (max-width: 600px) {
+            .payment-container .payment-item .item-title,
+            .payment-container .payment-item .item-options {
+                display: block;
+                width: 100%;
+            }
+
+            .payment-container .payment-item .item-title {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+    <script src="~/Scripts/appsettings.js"></script>
+
+    <script src="../Content/general/js/jquery-3.6.3.min.js"></script>
+    <script src="../Content/general/js/app-data.js"></script>
+    <script src="../Content/general/js/lang.js"></script>
+    <script src="../Content/general/js/site.js"></script>
+
+    <script>
+
+
+        $(document).ready(function () {
+
+
+            $('html').attr('lang', $('#hdnLang').val());
+            $('html').attr('dir', $('#hdnDir').val());
+
+            var objproductsWithCustomer = JSON.parse(localStorage.getItem("productsWithCustomer"));
+            var orderItemobj = JSON.parse(objproductsWithCustomer.SelectedProd)
+            var items = $(".order-items");
+            var totalPurchase = 0;
+            for (var i = 0; i < orderItemobj.length; i++) {
+                var itemTotal = parseFloat(orderItemobj[i].price) * parseFloat(orderItemobj[i].count);
+                var itemTemp = '<div id="' + orderItemobj[i].productId + '" class="item my-4 my-md-3"><div class="row"><div class="col-9"><h4>' + orderItemobj[i].productName + '</h4><p><strong class="count text-app-yellow">' + orderItemobj[i].count + '</strong><span class="text-secondary"> x ' + orderItemobj[i].price + ' ' + orderItemobj[i].priceLbl + '</span></p></div><div class="col-3 my-auto"><h1 class="text-app-blue">' + itemTotal.toFixed(3) + '</h1></div></div></div>';
+                items.append(itemTemp);
+                totalPurchase = totalPurchase + itemTotal;
+            }
+
+            items.append('<div class="row" id="totalamountdiv"><div class="col-9 text-end my-auto"><h4 class="text-app-blue-light"> Total </h4></div><div class="col-3 my-auto"><h1 class="text-app-blue-light">' + totalPurchase.toFixed(3) + '</h1></div>');
+
+            $('#hdnTotalAmount').val(totalPurchase.toFixed(3));
+            $('#hdnnetTotalAmount').val(totalPurchase.toFixed(3));
+
+
+            $('#lblCustName').text(objproductsWithCustomer.FullName);
+            $('#lblCustMobile').text(objproductsWithCustomer.Mobile);
+            $('#lblCustAddress').text(objproductsWithCustomer.Address1 + "," + objproductsWithCustomer.Address2 + "," + objproductsWithCustomer.Address3);
+
+
+
+
+
+            $('#btnApply').click(function () {
+
+                $.ajax({
+                    type: "GET",
+                    url: appBaseUrl + "apiorder/checkVoucher/" + $('#txtcoupon').val(),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+
+                        var voucherObj = JSON.parse(response);
+                        // console.log(voucherObj);
+
+                        if (voucherObj.Id > 0) {
+
+                            var offerType = voucherObj.OfferType;
+
+                            var prevTotal = 0;// parseFloat($('#hdnTotalAmount').val());
+                            var disCount = 0;// voucherObj.OfferPercent;
+                            var calculateddisCount = 0;// ((parseFloat(prevTotal) / 100) * parseInt(disCount));
+                            var netAmount = 0;// parseFloat(prevTotal - calculateddisCount).toFixed(3);
+
+
+                            if (offerType == "percentage") {
+                                prevTotal = parseFloat($('#hdnTotalAmount').val());
+                                disCount = voucherObj.OfferPercent;
+                                calculateddisCount = ((parseFloat(prevTotal) / 100) * parseInt(disCount));
+                                netAmount = parseFloat(prevTotal - calculateddisCount).toFixed(3);
+                            }
+                            else {
+
+                                prevTotal = parseFloat($('#hdnTotalAmount').val());
+                                disCount = voucherObj.OfferAmount;
+                                calculateddisCount = parseFloat(disCount);// parseFloat(prevTotal) - parseInt(disCount);// ((parseFloat(prevTotal) / 100) * parseInt(disCount));
+                                netAmount = parseFloat(prevTotal - calculateddisCount).toFixed(3);
+                            }
+
+                            var disCountstr = "";
+
+                            if (offerType == "percentage") {
+                                disCountstr = disCount + ' % ';
+                            }
+                            else {
+                                disCountstr = disCount;
+                            }
+
+
+
+                            $('#totalamountdiv').append('<div class="col-9 text-end my-auto"><h4> Discount ' + disCountstr + ' </h4><h4 class="text-app-blue-light">Net Total</h4></div><div class="col-3 my-auto"><h1 class="text-app-blue-light">' + netAmount + '</h1></div>');
+                            $('#hdnnetTotalAmount').val(netAmount);
+                            $('#hdnCouponcode').val($('#txtcoupon').val());
+                            $('#hdnCouponId').val(voucherObj.Id);
+
+
+
+                            if (offerType == "percentage") {
+                                $('#hdnDiscount').val(voucherObj.OfferPercent);
+                            }
+                            else {
+                                $('#hdnDiscount').val(voucherObj.OfferAmount);
+                            }
+
+                            $('#hdnDiscountAmount').val(calculateddisCount);
+                            $('#hdnOfferType').val(voucherObj.OfferType);
+
+
+                        }
+
+                    },
+                    failure: function (response) {
+                        // alert(response.responseText);
+                        // alert("Failure");
+                    },
+                    error: function (response) {
+                        // alert(response);
+                        // alert("Error");
+                    }
+                });
+
+            });
+
+
+            $('#btnConfirm').click(function () {
+
+                //objproductsWithCustomer.paymentType = $('input[name="support"]:checked').val();
+                objproductsWithCustomer.paymentType = $('input[name="support"]:checked').val();
+                objproductsWithCustomer.DeliveryDate = $('#txtDeliveryDate').val();
+
+                objproductsWithCustomer.scheduleTime = $('input[name="subscription"]:checked').val();
+                objproductsWithCustomer.VouvherOrderInfo = {
+                    "TotalAmunt": $('#hdnTotalAmount').val(),
+                    "NetAmount": $('#hdnnetTotalAmount').val(),
+                    "CounponCode": $('#hdnCouponcode').val(),
+                    "DiscountId": $('#hdnCouponId').val(),
+                    "DiscountPercent": $('#hdnDiscount').val(),
+                    "DiscountedAmount": $('#hdnDiscountAmount').val(),
+                    "DiscountType": $('#hdnOfferType').val()
+                };
+
+                objproductsWithCustomer.CreatedBy = $('#appCurrentUserId').val();
+
+
+
+                var weekday = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+
+
+                var currentDate = new Date(); // for now
+                var currenthour = currentDate.getHours(); // => 9
+                var currentminutes = currentDate.getMinutes(); // =>  30
+                var currentSeconds = currentDate.getSeconds(); // => 51
+
+
+                var deliveryDate = new Date($('#txtDeliveryDate').val());
+
+                //alert("ddate=" + $('#txtDeliveryDate').val().length);
+
+                if ($('#txtDeliveryDate').val().length == 0) {
+
+                    deliveryDate = currentDate;
+                }
+
+                var deliveryDay = weekday[deliveryDate.getDay()];
+
+
+                var getCurrentDateString = (currentDate.getMonth() + 1) + "-" + currentDate.getDate() + "-" + currentDate.getFullYear();
+                var getDeliveryDateString = (deliveryDate.getMonth() + 1) + "-" + deliveryDate.getDate() + "-" + deliveryDate.getFullYear();
+
+
+
+                if (getCurrentDateString == getDeliveryDateString) {
+
+                    // alert("Delivery Can't done on same day of ordered date.")
+
+                    deliveryDate.setDate(deliveryDate.getDate() + 1)
+
+
+                }
+
+
+
+                if (parseInt(currenthour) > parseInt(7)) {
+
+
+                    currentDate.setDate(currentDate.getDate() + 1);
+
+                    getCurrentDateString = (currentDate.getMonth() + 1) + "-" + currentDate.getDate() + "-" + currentDate.getFullYear();
+                    getDeliveryDateString = (deliveryDate.getMonth() + 1) + "-" + deliveryDate.getDate() + "-" + deliveryDate.getFullYear();
+
+                    //   alert(getCurrentDateString + '==' + getDeliveryDateString);
+
+                    if (getCurrentDateString == getDeliveryDateString) {
+
+                        // alert("Order booked after 6 PM will not be delivered on next Day");
+                        //return false;
+                    }
+
+
+                }
+
+
+
+
+                deliveryDay = weekday[deliveryDate.getDay()];
+
+                if (deliveryDay == "friday") {
+
+                    // alert("Order Will not be deliver on Friday");
+
+                    deliveryDate.setDate(deliveryDate.getDate() + 1)
+
+                    //return false;
+                }
+
+
+
+                if ($('#txtDeliveryDate').val().length == 0) {
+
+
+
+                    objproductsWithCustomer.DeliveryDate = deliveryDate.getFullYear() + "-" + (deliveryDate.getMonth() + 1) + "-" + deliveryDate.getDate();
+
+                }
+
+
+                //console.log(objproductsWithCustomer);
+                var apiUrl = appBaseUrl + "apiorder/confirm";
+
+                $.ajax({
+                    type: "POST",
+                    url: apiUrl,
+                    data: JSON.stringify(objproductsWithCustomer),
+                    contentType: "application/json; charset=utf-8",
+                    crossDomain: true,
+                    dataType: "json",
+                    success: function (data, status, jqXHR) {
+
+
+                        $(".alert-success").append(`<strong>Success!</strong> Order Created Successfuly. Your Order #` + data);
+
+                        $(".alert-success").show();
+
+
+                        const myTimeout = setTimeout(navigateToHome, 10000);
+
+
+                        /// window.location.href = "../user/Index";
+
+                    },
+
+                    error: function (jqXHR, status) {
+                        // error handler
+                        console.log(jqXHR);
+                        alert('fail' + status.code);
+                    }
+                });
+            });
+
+
+            function navigateToHome() {
+                window.location.href = "../user/Index";
+            }
+
+
+
+        });
+
+
+
+
+
+
+    </script>
+
+    <script>
+        // Page variables
+        var divOrder = $("#divOrder");
+        var divOrderConfirmation = $(".order-confirmation");
+
+
+        //divOrderConfirmation.hide();
+        // Pre-define function
+        function bindCustomerDetail() {
+            var custDetail = getSessionCustomer();
+            if (custDetail) {
+                addressTemp =
+                    `<div>Building: <strong>` +
+                    custDetail.building +
+                    `</strong></div>
+                        <div>Street: <strong>` +
+                    custDetail.street +
+                    `</strong></div>
+                        <div>Block: <strong>` +
+                    custDetail.block +
+                    `</strong></div>
+                        <div>City: <strong>` +
+                    custDetail.city +
+                    `</strong></div>`;
+
+                $("#lblCustName").text(custDetail.name);
+                $("#lblCustMobile").text(custDetail.mobile);
+                $("#lblCustAddress").html(addressTemp);
+            }
+        }
+        function handleView(clickedAction) {
+            if (clickedAction == "login") {
+                divLogin.hide();
+                divOrder.hide();
+                divRegister.show("slow");
+            }
+            if (clickedAction == "register") {
+                // divRegister.hide();
+                divOrder.hide();
+                divLogin.show("slow");
+            }
+        }
+
+        
+    </script>
+
+    <script>
+        function handleCustomerLogin() {
+            handleCustNextBtnState(false);
+            var txtCustMobile = $("#txtCustMobile").val();
+
+            if (!txtCustMobile) {
+                alert("Please enter mobile number");
+                return false;
+            }
+            var tempAppUsers = getAppUsers();
+
+            var cust = tempAppUsers.filter((item) => item.mobile == txtCustMobile);
+
+            if (cust.length == 0) {
+                alert("Customer not found.");
+                return false;
+            }
+
+            setSessionCustomer(cust[0]);
+
+            $("#txtRCustName").val(cust[0].name);
+            $("#txtRCustMobile").val(cust[0].mobile);
+            $("#txtRCustAddress").val(cust[0].address);
+
+            handleCustNextBtnState(true);
+        }
+
+        function handleCustomerReset() {
+            // $("#txtCustMobile").val("");
+            // $("#txtRCustName").val("");
+            // $("#txtRCustMobile").val("");
+            // $("#txtRCustAddress").val("");
+            // divOrder.hide();
+            // divLogin.show("slow");
+            // sessionStorage.removeItem("customer");
+            history.back();
+        }
+        function handleCustomerRegister() {
+            var txtRCustName = $("#txtRCustName").val();
+            var txtRCustMobile = $("#txtRCustMobile").val();
+            var txtRCustAddress = $("#txtRCustAddress").val();
+
+            if (!txtRCustName) {
+                alert("Please enter the name");
+                return false;
+            }
+            if (!txtRCustMobile) {
+                alert("Please enter the mobile number");
+                return false;
+            }
+            if (!txtRCustAddress) {
+                alert("Please enter the address");
+                return false;
+            }
+            setSessionCustomer({
+                name: txtRCustName,
+                mobile: txtRCustMobile,
+                address: txtRCustAddress,
+            });
+            bindCustomerDetail();
+            // divRegister.hide();
+            divOrder.show("slow");
+        }
+    </script>
+
+</head>
+<body>
+
+    <input type="hidden" id="hdnTotalAmount" value="0" />
+    <input type="hidden" id="hdnnetTotalAmount" value="0" />
+    <input type="hidden" id="hdnDiscountAmount" value="0" />
+    <input type="hidden" id="hdnCouponcode" value="0" />
+    <input type="hidden" id="hdnCouponId" value="0" />
+    <input type="hidden" id="hdnDiscount" value="0" />
+    <input type="hidden" id="hdnOfferType" value="" />
+
+    <nav class="bg-app-yg fixed-top px-1 px-md-3 shadow-lg">
+        <div class="row">
+            <div class="col-4 my-auto">
+                <div class="text-start fs-5 my-auto">
+                    <span class="bg-opacity-50 bg-secondary p-1 rounded shadow btn fw-bold" onclick="swithLang()">
+                        <span class="px-2" data-lang="lblLanguage">عربي</span>
+                    </span>
+                    <a class="mx-3 mx-md-5 text-white" href="/" data-lang="lblProducts">Products</a>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="text-center my-auto">
+                    <a href="/index.html">
+                        <img src="../Content/general/img/main-logo.png" height="70" alt="" />
+                    </a>
+                </div>
+            </div>
+            <div class="col-4 my-auto">
+                <div class="my-auto">
+                    <button class="btn btn-light btn-sm d-none">Login</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <section class="page-content-section">
+        <div class="text-center page-header frozen d-none">
+            <div class="overlay h-100 w-100">
+                <div class="title">
+                    <h1>Frozen Products</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-content container py-5">
+            <div id="divOrder">
+                <div class="border p-2 rounded shadow-sm">
+                    <h2 class="my-4 text-app-blue-light">Customer Detail</h2>
+
+                    <div class="g-2 g-md-5 row">
+                        <div class="col-6">
+                            <label>Customer Name</label>
+                            <p><strong id="lblCustName">Mohamed Salihu</strong></p>
+                        </div>
+                        <div class="col-6">
+                            <label>Mobile #</label>
+                            <p><strong id="lblCustMobile">67752065</strong></p>
+                        </div>
+                        <div class="col-12">
+                            <label class="fw-bold">Address</label>
+                            <div id="lblCustAddress"></div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-secondary btn-sm"
+                                    onclick="handleCustomerReset()">
+                                <i class="bi bi-arrow-clockwise mx-1"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-5 border p-2 rounded shadow-sm">
+                    <h2 class=" py-3 text-app-blue-light">Order Detail</h2>
+                    <div class="order-items"></div>
+
+                    <div class="order-confirmation">
+                        <div class="payment-container mt-5">
+                            <div class="form-control payment-item">
+                                <div class="col-3 col-md-4 col-md-4">
+                                    @Resources.Global.Coupen_Code
+                                </div>
+                                <div class="col-3 col-md-4"><input type="text" id="txtcoupon" class="form-control col-md-4"></div>
+                                <div class="col-3 col-md-4"><input type="button" class="btn btn-primary col-md-4" id="btnApply" value="@Resources.Global.Apply" /></div>
+                                @*<div class="item-text">
+                                <div>
+                                    <input type="text" id="txtcoupon" class="form-control">
+                                    <div class="col-3 col-md-2">
+                                        <input type="button" class="btn btn-primary" id="btnApply" value="Apply" />
+                                    </div>
+
+                                </div>
+
+
+                            </div>*@
+
+                            </div>
+
+                            <div class="payment-item">
+                                <div class="item-title">@Resources.Global.Delivery_Date</div>
+                                <div class="item-options">
+                                    <div>
+                                        <input type="date" id="txtDeliveryDate" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="payment-item">
+                                <div class="item-title">
+                                    @Resources.Global.Delivery_Scheduled
+                                </div>
+                                <div class="item-options">
+                                    <div class="selection">
+                                        <input type="radio"
+                                               name="subscription"
+                                               id="subscription"
+                                               checked="checked" value="8am - 2pm" />
+                                        <label for="subscription">
+                                            @Resources.Global.Eight_am_2pm
+                                            <span></span>
+                                        </label>
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="selection">
+                                        <input type="radio"
+                                               name="subscription"
+                                               id="subscription-2" value="2pm - 5pm" />
+                                        <label for="subscription-2">
+                                            @Resources.Global.Two_pm_5pm
+                                            <span></span>
+                                        </label>
+                                        <div class="check"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="payment-item">
+                                <div class="item-title">
+                                    @Resources.Global.Payment_Type
+                                </div>
+                                <div class="item-options">
+
+                                    @*<div class="selection">
+                                    <input type="radio" name="support" id="support-3" checked="checked" value="cash" />
+                                    <label for="support-3">@Resources.Global.Cash<span></span></label>
+                                    <div class="check"></div>
+                                </div>*@
+
+                                    <div class="selection">
+                                        <input type="radio" name="support" id="support" value="cashondelovery" checked="checked" />
+                                        <label for="support">
+                                            @Resources.Global.Cash_on_Delivery
+                                            <span></span>
+                                        </label>
+                                        <div class="check"></div>
+                                    </div>
+                                    <div class="selection">
+                                        <input type="radio" name="support" id="support-2" value="link" />
+                                        <label for="support-2">
+                                            @Resources.Global.KNET
+                                            <span></span>
+                                        </label>
+                                        <div class="check"></div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="my-5">
+
+                            @*<input type="button" value="Confirm and PAY" id="btnConfirm" class="btn btn-primary fs-2 w-100" />*@
+
+                            <a id="btnConfirm" class="btn btn-primary fs-2 w-100">
+                                @Resources.Global.Confirm_and_Pay
+                                <i class="bi bi-arrow-right mx-1"></i>
+                            </a>
+
+
+
+                            
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="alert alert-success">
+                @*<strong>Success!</strong> This alert box could indicate a successful or positive action.*@
+            </div>
+
+            <!-- <div id="divOrderSummary" class="order-summary"></div> -->
+            <!-- <hr /> -->
+            <div class="my-5">
+                <a href="../user/index" class="btn btn-secondary btn-sm">
+                    <i class="mx-1 bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+
+    </section>
+
+</body>
+</html>

@@ -1,0 +1,340 @@
+﻿
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KUPCO | Products</title>
+
+    <link rel="apple-touch-icon"
+          sizes="180x180"
+          href="../Content/general/fav/apple-touch-icon.png" />
+    <link rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="../Content/general/fav/favicon-32x32.png" />
+    <link rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="../Content/general/fav/favicon-16x16.png" />
+    @*<link rel="manifest" href="../Content/general/fav/site.webmanifest" />*@
+
+    <link id="css-ltr" rel="stylesheet" href="../Content/general/css/bootstrap.min.css" />
+    <!-- Keep linkBootstrap for dynamic language -->
+    <link rel="stylesheet" href="/" id="linkBootstrap">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+          integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="../Content/general/css/site.css" />
+    <link href="~/Content/assets/css/custom.css" rel="stylesheet" />
+    <script>
+        var tempQuery = new URLSearchParams(document.location.search);
+    </script>
+
+    <script src="~/Content/general/js/jquery-3.6.3.min.js"></script>
+
+
+    <script src="~/Content/general/js/app-data.js"></script>
+
+    <script src="~/Content/general/js/lang.js"></script>
+
+    <script src="~/Scripts/appsettings.js"></script>
+    <script src="~/Content/general/js/site.js"></script>
+
+</head>
+<body>
+    <nav class="bg-app-yg fixed-top px-1 px-md-3 shadow-lg">
+        <div class="row">
+            <div class="col-4 my-auto">
+                <div class="text-start fs-5 my-auto">
+                    <span class="bg-opacity-50 bg-secondary p-1 rounded shadow btn fw-bold" onclick="swithLang()">
+                        <span class="px-2" data-lang="lblLanguage">عربي</span>
+                    </span>
+                    <a class="mx-3 mx-md-5 text-white" href="/" data-lang="lblProducts">Products</a>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="text-center my-auto">
+                    <a href="/index.html">
+                        <img src="../Content/general/img/main-logo.png" height="70" alt="" />
+                    </a>
+                </div>
+            </div>
+            <div class="col-4 my-auto">
+                <div class="my-auto">
+                    <button class="btn btn-light btn-sm d-none">Login</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <section class="page-content-section">
+        <div id="header-bg" class="text-center page-header">
+            <div class="overlay h-100 w-100">
+                <div class="title">
+                    <h1 id="lblPageTitle">Frozen Products</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-content container">
+            <h2 class="mb-4 text-app-blue-light">Choose your products</h2>
+
+            <div id="divItems" class="items"></div>
+        </div>
+
+        <div class="fixed-bottom bg-white">
+            <div class="container">
+                <div class="d-flex my-2">
+                    <a class="btn btn-primary w-100 checkout">
+                        Checkout <i class="bi bi-arrow-right fs-5 mx-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <script>
+
+        $(document).ready(function () {
+
+            var pageName = tempQuery.get("pt");
+
+            var apiUrl = appBaseUrl + "apiproduct/getbytype";
+
+            
+
+            if (pageName == "fz") {
+                pageName = "frozen";
+            }
+            else if (pageName == "fs") {
+                pageName = "fresh";
+            }
+            else if (pageName == "eg") {
+                pageName = "fresheggs";
+            }
+            ////alert(localStorage.getItem("selectedprodlist"));
+
+            var data = {
+                "ProductType": pageName
+            };
+
+            $.ajax({
+                type: "POST",
+                url: apiUrl,
+                data: JSON.stringify(data),// now data come in this function
+                contentType: "application/json; charset=utf-8",
+                crossDomain: true,
+                dataType: "json",
+                success: function (data, status, jqXHR) {
+
+
+
+                    var itemTemp = `<div id="fz{itemId}" producttype="{producttype}" price="{price}" pricelbl="{priceLbl}" productname="{productname}" productid="{itemId}" class="item my-5 my-md-1 rounded row">
+                        <div class="col-3 text-center">
+                          <img src="{imgURL}" alt="product" />
+                        </div>
+                        <div class="col-7 my-auto">
+                          <h4>{itemName}</h4>
+<p class="text-secondary small">{description} </p>
+                                                                    <div class="col-4 col-md-4 my-auto py-2">
+                                                                        <span class="amount">{price} {priceLbl}  </span>
+                                                                    </div>
+
+                          <div class="my-0">
+                            <div class="row">
+                              <div class="col-8 col-md-4">
+                                <div class="counter-container">
+                                  <div class="button ccol ccol-1 minusprod" productid="{itemId}">
+                                    <button id="minus-btn">-</button>
+                                  </div>
+                                  <div class="number ccol ccol-2">
+                                    <h2 id="count_{itemId}" class="count">1</h2>
+                                  </div>
+                                  <div class="button ccol ccol-1 addprod" productid="{itemId}">
+                                    <button id="plus-btn">+</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="buyProduct col-2 text-center my-auto text-secondary text-opacity-50">
+                          <span>
+                                                                    <i class="fa fs-4 fa-check-circle d-none"></i>
+                                                                    <i class="bi bi-bag-check-fill fs-4"></i>
+                                                                </span>
+                        </div>
+                        <div class="col-12"></div>
+                      </div>`;
+
+
+                    //console.log(JSON.parse(data));
+
+
+                    var products = JSON.parse(data);
+
+                    $("#divItems").empty();
+
+                    var items = $("#divItems");
+
+                    $(products).each(function () {
+
+                        console.log((this).Name);
+
+                        var dataTemp = itemTemp
+                            .replaceAll("{itemId}", (this).Id)
+                            .replaceAll("{producttype}", (this).ProductType)
+                            .replaceAll("{imgURL}", "/Content/general/img/white/" + (this).img)
+                            .replaceAll("{itemName}", (this).Name)
+                            .replaceAll("{price}", (this).Price)
+                            .replaceAll("{cat}", (this).ProductType)
+                            .replaceAll("{priceLbl}", (this).priceLbl)
+                            .replaceAll("{description}", (this).Description)
+                            .replaceAll("{productname}", (this).Name)
+                        items.append(dataTemp);
+                    });
+
+
+                    //tempProdList.forEach((el) => {
+                    //});
+
+
+                },
+
+                error: function (jqXHR, status) {
+                    // error handler
+                    console.log(jqXHR);
+                    alert('fail' + status.code);
+                }
+            });
+
+
+
+
+            $('#divItems').on('click', '.addprod', function () {
+                //alert("hi");
+                var prodId = ($(this).attr("productid"));
+                var counterId = "count_" + prodId;
+                var prodCount = $('#' + counterId).text();
+                $('#' + counterId).text(parseInt(prodCount) + 1);
+            });
+
+
+            $('#divItems').on('click', '.minusprod', function () {
+
+
+
+                var prodId = ($(this).attr("productid"));
+                var counterId = "count_" + prodId;
+                var prodCount = $('#' + counterId).text();
+                if (parseInt(prodCount) > 1) {
+                    $('#' + counterId).text(parseInt(prodCount) - 1);
+                }
+
+            });
+
+
+            $('.checkout').click(function () {
+
+
+                var prodtemp = [];
+
+                var productList = $('.selectedprod');
+
+                for (var i = 0; i < productList.length; i++) {
+                    var prodId = $(productList[i]).attr("productid");
+                    var prodIdCount = $('#count_' + prodId).text();
+                    // alert(prodIdCount);
+                    var prod = {
+                        "productId": $(productList[i]).attr("productid"), "count": $('#count_' + prodId).text(), "productType": $(productList[i]).attr("producttype"),
+                        "price": $(productList[i]).attr("price"), "priceLbl": $(productList[i]).attr("pricelbl"), "productName": $(productList[i]).attr("productName")
+                    };
+                    prodtemp.push(prod);
+                }
+
+                if (productList.length < 1) {
+
+                    alert("Select Product");
+                    return false;
+                }
+
+                /// console.log(prodtemp);
+
+                localStorage.setItem("selectedprodlist", JSON.stringify(prodtemp));
+
+                ///console.log(JSON.stringify(prodtemp));
+
+                window.location.href = "../user/customer";
+
+            });
+
+            $('#divItems').on('click', '.buyProduct', function () {
+
+
+
+                console.log(this);
+
+                console.log($(this).parent());
+
+                var parentDiv = $(this).parent();
+
+                if ($(parentDiv).hasClass('active') == false) {
+
+                    $(parentDiv).addClass('active');
+                    $(parentDiv).addClass('selectedprod');
+                } else {
+
+                    var prodId = ($(this).attr("productid"));
+                    var counterId = "count_" + prodId;
+                    $('#' + counterId).text(0);
+
+                    $(parentDiv).removeClass('active');
+                    $(parentDiv).removeClass('selectedprod');
+                }
+
+
+
+            });
+
+        });
+
+    </script>
+    <script>
+        var tempProdList = [];
+        var pageName = tempQuery.get("pt");
+        var pageTitle = "Frozen Products";
+        var headerBg = "frozen";
+        tempProdList = getFrozenItems();
+
+        if (pageName) {
+            tempProdList =
+                pageName == "fz"
+                    ? frozenItems
+                    : pageName == "fs"
+                        ? freshItems
+                        : eggItems;
+            pageTitle =
+                pageName == "fz"
+                    ? "Frozen Products"
+                    : pageName == "fs"
+                        ? "Fresh Products"
+                        : "Fresh Eggs";
+            headerBg =
+                pageName == "fz" ? "frozen" : pageName == "fs" ? "fresh" : "egg";
+        }
+
+        $("#header-bg").addClass(headerBg);
+        $("#lblPageTitle").text(pageTitle);
+
+
+    </script>
+</body>
+</html>

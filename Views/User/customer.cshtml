@@ -1,0 +1,538 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KUPCO | Products</title>
+
+    <link rel="apple-touch-icon"
+          sizes="180x180"
+          href="../Content/general/fav/apple-touch-icon.png" />
+    <link rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="../Content/general/fav/favicon-32x32.png" />
+    <link rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="../Content/general/fav/favicon-16x16.png" />
+    <link rel="manifest" href="../Content/general/fav/site.webmanifest" />
+
+    <link id="css-ltr" rel="stylesheet" href="../Content/general/css/bootstrap.min.css" />
+    <!-- Keep linkBootstrap for dynamic language -->
+    <link rel="stylesheet" href="/" id="linkBootstrap">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+          integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="../Content/general/css/site.css" />
+    <link href="~/Content/assets/css/custom.css" rel="stylesheet" />
+
+    <script src="~/Scripts/appsettings.js"></script>
+
+    <script src="../Content/general/js/jquery-3.6.3.min.js"></script>
+    <script src="../Content/general/js/app-data.js"></script>
+    <script src="../Content/general/js/lang.js"></script>
+    <script src="../Content/general/js/site.js"></script>
+
+
+
+    <script>
+
+        $(document).ready(function () {
+
+
+
+            $(".delivery-place").click(function () {
+
+                //console.log($(".delivery-place"));
+
+                $(".delivery-place").removeClass('active');
+                $(this).addClass('active');
+
+            });
+
+
+            $('#btnSearch').click(function () {
+
+                $.ajax({
+                    type: "GET",
+                    url: appBaseUrl + "apicustomer/getbynumber/" + $('#txtCustMobile').val(),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var customer = JSON.parse(response);
+                        console.log(customer);
+
+                        if (customer.Id == 0) {
+
+                            alert("not exist");
+                        }
+
+                        $('.delivery-place.office').removeClass('active');
+                        $('.delivery-place.home').removeClass('active');
+
+                        $('#txtRCustName').val(customer.FullName);
+                        $('#txtRCustMobile').val(customer.Mobile);
+                        $('#optCustCity').val(customer.CityId);
+                        $('#txtRCustBlock').val(customer.Address1);
+                        $('#txtRCustStreet').val(customer.Address2);
+                        $('#txtRCustBuilding').val(customer.Address3);
+                        $('#hdnCustomerId').val(customer.Id);
+                        $('#txtRCustNote').val(customer.Note);
+                        $('.delivery-place.' + customer.AddressType).addClass('active');
+
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                        alert("Failure");
+                    },
+                    error: function (response) {
+                        alert(response);
+                        alert("Error");
+                    }
+                });
+
+            });
+
+            var optCustCity = $('#optCustCity');
+
+            $.ajax({
+                type: "GET",
+                url: appBaseUrl + "apicustomer/cities",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var cityList = JSON.parse(response);
+
+                    var loopCount = 0;
+                    $(cityList).each(function () {
+
+
+                        /*
+                        if (loopCount == 0) {
+
+                            var optionNew = $("<option />");
+                            optionNew.html('---Select---');
+                            optionNew.val(this.Id);
+                            optionNew.attr('driverId','0');
+                            optCustCity.append(optionNew);
+                        }*/
+
+                        var option = $("<option />");
+
+                        //Set Customer Name in Text part.
+                        option.html(this.Name);
+                        option.val(this.Id);
+                        option.attr('driverId', this.DriverId);
+                        optCustCity.append(option);
+                        loopCount = loopCount + 1;
+
+                    });
+                    //}
+
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                    alert("Failure");
+                },
+                error: function (response) {
+                    alert(response);
+                    alert("Error");
+                }
+            });
+
+
+
+
+            $('#btnSave').click(function () {
+
+
+
+                //  alert($('#optCustCity').val());
+                //    alert($('#optCustCity').text());
+                //  alert($('#optCustCity').attr('driverId'));
+
+                var cityId = $('#optCustCity').find(":selected").val();
+                var cityName = $('#optCustCity').find(":selected").text();
+                var driverId = $('#optCustCity').find(":selected").attr('driverId');
+
+
+                var validated = false;
+
+                if ($('#txtRCustName').val() == "") {
+                    alert("Enter Customer Name");
+                    return false;
+                }
+
+
+                if ($('#txtRCustMobile').val().length == 0) {
+                    alert("Enter Mobile Number");
+                    return false;
+                }
+
+                if ($('#txtRCustMobile').val().length != 8) {
+                    alert("Enter Valid Mobile Number");
+                    return false;
+                }
+
+                if (typeof ($(".delivery-place.active").attr("addresstype")) === "undefined") {
+                    alert("Select Address Type");
+                    return false;
+                }
+
+                var data = {
+                    "Id": $('#hdnCustomerId').val(), "FullName": $('#txtRCustName').val(),
+                    "Mobile": $('#txtRCustMobile').val(),
+                    "City": cityName,
+                    "CityId": cityId,
+                    "DriverId": driverId,
+                    "Address1": $('#txtRCustBlock').val(),
+                    "Address2": $('#txtRCustStreet').val(),
+                    "Address3": $('#txtRCustBuilding').val(),
+                    "SelectedItem": $('#hdnSelectedItem').val(),
+                    "AddressType": $(".delivery-place.active").attr("addresstype"),
+                    "SelectedProd": localStorage.getItem("selectedprodlist"),
+                    "Note": $('#txtRCustNote').val()
+                };
+
+                localStorage.setItem("productsWithCustomer", JSON.stringify(data));
+
+                window.location.href = "../user/order";
+
+
+            });
+
+
+        });
+
+    </script>
+
+    <script>
+        // Page variables
+        var divLogin = $("#divLogin");
+        var divOrder = $("#divOrder");
+        var btnCustomerNext = $("#btnCustomerNext");
+        var isExistingCustomer = false;
+
+        // Pre-define function
+        function handleCustNextBtnState(disalbeState) {
+            btnCustomerNext.attr("disabled", disalbeState);
+        }
+        function bindCustomerDetail() {
+            var custDetail = getSessionCustomer();
+            if (custDetail) {
+                $("#lblCustName").text(custDetail.name);
+                $("#lblCustMobile").text(custDetail.mobile);
+                $("#lblCustAddress").text(custDetail.address);
+            }
+        }
+        function handleView(clickedAction) {
+            if (clickedAction == "login") {
+                divLogin.hide();
+                divOrder.hide();
+                divRegister.show("slow");
+            }
+            if (clickedAction == "register") {
+                // divRegister.hide();
+                divOrder.hide();
+                divLogin.show("slow");
+            }
+        }
+        function clearCustomerInfo() {
+            $("#txtCustMobile").val("");
+            $("#txtRCustName").val("");
+            $("#txtRCustMobile").val("");
+            $("#txtRCustCity").val("");
+            $("#txtRCustBlock").val("");
+            $("#txtRCustStreet").val("");
+            $("#txtRCustBuilding").val("");
+            sessionStorage.removeItem("customer");
+        }
+
+        // on init
+        clearCustomerInfo();
+    </script>
+
+    <script>
+        function handleCustomerLogin() {
+            var txtCustMobile = $("#txtCustMobile").val();
+
+            if (!txtCustMobile) {
+                alert("Please enter mobile number");
+                return false;
+            }
+
+            isExistingCustomer = false;
+            clearCustomerInfo();
+            var tempAppUsers = getAppUsers();
+
+            var cust = tempAppUsers.filter((item) => item.mobile == txtCustMobile);
+
+            if (cust.length == 0) {
+                alert("Customer not found.");
+                return false;
+            }
+
+            setSessionCustomer(cust[0]);
+
+            $("#txtRCustName").val(cust[0].name);
+            $("#txtRCustMobile").val(cust[0].mobile);
+            $("#txtRCustAddress").val(cust[0].address);
+            $("#txtRCustCity").val(cust[0].city);
+            $("#txtRCustBlock").val(cust[0].block);
+            $("#txtRCustStreet").val(cust[0].street);
+            $("#txtRCustBuilding").val(cust[0].building);
+
+            isExistingCustomer = true;
+        }
+        function handleCustomerNext() {
+            if (isExistingCustomer) {
+                window.location.href = "/user/order";
+                return true;
+            }
+
+            var txtRCustName = $("#txtRCustName").val();
+            var txtRCustMobile = $("#txtRCustMobile").val();
+            // var txtRCustAddress = $("#txtRCustAddress").val();
+            var txtRCustCity = $('#optCustCity').val();
+            var txtRCustBlock = $("#txtRCustBlock").val();
+            var txtRCustStreet = $("#txtRCustStreet").val();
+            var txtRCustBuilding = $("#txtRCustBuilding").val();
+
+            if (!txtRCustName) {
+                alert("Please enter the name");
+                return false;
+            }
+            if (!txtRCustMobile) {
+                alert("Please enter the mobile number");
+                return false;
+            }
+            if (!txtRCustCity) {
+                alert("Please select the city");
+                return false;
+            }
+            if (!txtRCustBlock) {
+                alert("Please enter the block");
+                return false;
+            }
+            if (!txtRCustStreet) {
+                alert("Please enter the street");
+                return false;
+            }
+            if (!txtRCustBuilding) {
+                alert("Please enter the building");
+                return false;
+            }
+
+
+            setSessionCustomer({
+                name: txtRCustName,
+                mobile: txtRCustMobile,
+                city: txtRCustCity,
+                block: txtRCustBlock,
+                street: txtRCustStreet,
+                building: txtRCustBuilding
+            });
+
+            //window.location.href = "/user/order";
+        }
+    </script>
+
+
+</head>
+
+<body>
+    <input type="hidden" id="hdnCustomerId" />
+    <nav class="bg-app-yg fixed-top px-1 px-md-3 shadow-lg">
+        <div class="row">
+            <div class="col-4 my-auto">
+                <div class="text-start fs-5 my-auto">
+                    <span class="bg-opacity-50 bg-secondary p-1 rounded shadow btn fw-bold" onclick="swithLang()">
+                        <span class="px-2" data-lang="lblLanguage">عربي</span>
+                    </span>
+                    <a class="mx-3 mx-md-5 text-white" href="/" data-lang="lblProducts">Products</a>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="text-center my-auto">
+                    <a href="/index.html">
+                        <img src="../Content/general/img/main-logo.png" height="70" alt="" />
+                    </a>
+                </div>
+            </div>
+            <div class="col-4 my-auto">
+                <div class="my-auto">
+                    <button class="btn btn-light btn-sm d-none">Login</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <section class="page-content-section">
+        <div class="text-center page-header frozen d-none">
+            <div class="overlay h-100 w-100">
+                <div class="title">
+                    <h1>Frozen Products</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-content container py-5">
+            <div id="divLogin">
+                <h2 class="my-4 text-app-blue-light">Enter Mobile #</h2>
+
+                <div class="row">
+                    <div class="col-12">
+                        <small>Enter your mobile number to continue the order</small>
+                    </div>
+                    <div class="col-9 col-md-4">
+                        <input type="text" id="txtCustMobile" class="form-control" pattern="\d*" maxlength="8" />
+                    </div>
+                    <div class="col-3 col-md-2">
+                        <input type="button" class="btn btn-primary" id="btnSearch" value="@Resources.Global.Search" />
+                    </div>
+                </div>
+            </div>
+
+            <div id="divRegister">
+                <h2 class="mt-5 text-app-blue-light">Customer Info</h2>
+                <div>
+                    <small class="text-secondary">If new, please fill below detail and continue next</small>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+
+                        <div class="form-group my-2">
+                            <label>@Resources.Global.Delivery_Place</label>
+                            <input type="hidden"
+                                   id="txtRCustDeliveryPlace"
+                                   value="building"
+                                   class="form-control" />
+                            <div class="d-flex">
+                                <div id="dp-building"
+                                     class="position-relative delivery-place me-2 active office" addresstype="office">
+                                    <span>
+                                        <i class="fa fa-check-circle status"></i>
+                                    </span>
+                                    <span>
+                                        <i class="fa fa-4x fa-building icon"></i>
+                                    </span>
+                                </div>
+                                <div id="dp-home" class="position-relative delivery-place me-2 active home" addresstype="home">
+                                    <span>
+                                        <i class="fa fa-check-circle status"></i>
+                                    </span>
+                                    <span><i class="fa fa-4x fa-home icon"></i></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group my-2">
+                            <label>Fullname</label>
+                            <input type="text" id="txtRCustName" class="form-control" />
+                        </div>
+                        <div class="form-group my-2">
+                            <label>Mobile #</label>
+                            <input type="number" id="txtRCustMobile" class="form-control"  />
+                        </div>
+                        <div class="form-group my-2">
+                            <label>City</label>
+                            <select id="optCustCity" class="form-control">
+                                @*<option value="Al Ahmadi">Al Ahmadi</option>
+                                    <option value="Hawalli">Hawalli</option>
+                                    <option value="As Salimiyah">As Salimiyah</option>
+                                    <option value="Hawalli">Hawalli</option>
+                                    <option value="Sabah as Salim">Sabah as Salim</option>
+                                    <option value="Al Farwaniyah">Al Farwaniyah</option>
+                                    <option value="Al Fahahil">Al Fahahil</option>
+                                    <option value="Kuwait City">Kuwait City</option>
+                                    <option value="Ar Rumaythiyah">Ar Rumaythiyah</option>
+                                    <option value="Ar Riqqah">Ar Riqqah</option>
+                                    <option value="Salwa">Salwa</option>
+                                    <option value="Al Manqaf">Al Manqaf</option>
+                                    <option value="Ar Rabiyah">Ar Rabiyah</option>
+                                    <option value="Bayan">Bayan</option>
+                                    <option value="Farwaniyah">Farwaniyah</option>*@
+                            </select>
+                        </div>
+                        <div class="form-group my-2">
+                            <label>Block</label>
+                            <input type="text" id="txtRCustBlock" class="form-control" />
+                        </div>
+                        <div class="form-group my-2">
+                            <label>Street</label>
+                            <input type="text" id="txtRCustStreet" class="form-control" />
+                        </div>
+                        <div class="form-group my-2">
+                            <label>Building No #</label>
+                            <input type="text"
+                                   id="txtRCustBuilding"
+                                   class="form-control" />
+                        </div>
+
+                        <div class="form-group my-2">
+                            <label>@Resources.Global.Note</label>
+                            <textarea class="form-control" id="txtRCustNote" rows="3"></textarea>
+                        </div>
+
+
+                        <div>
+                            <button id="btnSave"
+                                    class="btn btn-primary w-100">
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--<div id="divOrder" class="d-none">
+                <div class="border p-2 rounded shadow-sm">
+                    <h2 class="my-4 text-app-blue-light">Customer Detail</h2>
+
+                    <div class="g-2 g-md-5 row">
+                        <div class="col-6">
+                            <label>Customer Name</label>
+                            <p><strong id="lblCustName">Mohamed Salihu</strong></p>
+                        </div>
+                        <div class="col-6">
+                            <label>Mobile #</label>
+                            <p><strong id="lblCustMobile">67752065</strong></p>
+                        </div>
+                        <div class="col-12">
+                            <label>Address</label>
+                            <p><strong id="lblCustAddress">Farwaniya, Kuwait</strong></p>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-secondary btn-sm"
+                                    onclick="handleCustomerReset()">
+                                <i class="bi bi-arrow-clockwise mx-1"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>-->
+            <!-- <hr /> -->
+            <!--<h2 class="my-5 pt-4 text-app-blue-light">Order Detail</h2>
+            <div class="order-items"></div>-->
+            <!-- <div id="divOrderSummary" class="order-summary"></div> -->
+            <!--<hr />
+                <div class="my-5">
+                    <a href="/index.html" class="btn btn-secondary btn-sm">
+                        <i class="mx-1 bi bi-arrow-left"></i> Back
+                    </a>
+                </div>
+            </div>-->
+        </div>
+    </section>
+
+   
+
+</body>
+</html>

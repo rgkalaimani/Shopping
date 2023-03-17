@@ -1,0 +1,159 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>SlaughterPrint</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+
+
+    <script>
+
+        $(document).ready(function () {
+
+
+            window.print();
+
+        });
+
+    </script>
+
+    <style>
+
+        .slaughterData td {
+            border: 1px;
+            border-style: solid;
+            padding: 5px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div>
+        @if (Model != null)
+        {
+            int frozenTotal = 0;
+            int freshTotal = 0;
+            int eggsTotal = 0;
+
+            <div>
+                <h2 style="color:red;text-underline-offset:auto;">
+                    OrderKUPCO.net Daily Demand For Online
+                </h2>
+            </div>
+            <table id="slaughterData" class="slaughterData table table-sm">
+                <tbody>
+                    <tr>
+                        <td>
+
+                            <h3>Delivery Date</h3>
+
+                        </td>
+                        <td>
+                            <div>
+                                <h3>Name</h3>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <h3>Frozen</h3>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div>
+                                <h3>Fresh Eggs</h3>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="ms-4">
+                                <h3>Fresh</h3>
+                            </div>
+                        </td>
+
+                    </tr>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+
+                                <h7>@item.DeliveryDate</h7>
+
+                            </td>
+                            <td>
+                                <div>
+                                    <h7>@item.Name / @item.Name_Ar</h7>
+                                </div>
+                            </td>
+
+                            <td style="text-align:center">
+                                <div>
+                                    <h7 style="text-align:center">
+                                        @item.Frozen
+                                        @{
+                                            frozenTotal = frozenTotal + item.Frozen;
+                                        }
+                                    </h7>
+                                </div>
+                            </td>
+
+                            <td style="text-align:center">
+                                <div>
+                                    <h7 style="text-align:center">
+                                        @item.FreshEggs
+                                        @{
+                                            eggsTotal = eggsTotal + item.FreshEggs;
+                                        }
+                                    </h7>
+                                </div>
+                            </td>
+
+                            <td style="text-align:center">
+
+                                <h7>
+                                    @item.Fresh
+                                    @{
+                                        freshTotal = freshTotal + item.Fresh;
+                                    }
+                                </h7>
+
+                            </td>
+                        </tr>
+
+                    }
+
+                    <tr>
+                        <td></td>
+                        <td>
+                            <h4>Total</h4>
+
+                        </td>
+                        <td>
+                            <h4 style="text-align:center">@frozenTotal.ToString()</h4>
+
+                        </td>
+                        <td>
+                            <h4 style="text-align:center">@eggsTotal.ToString()</h4>
+
+                        </td>
+                        <td>
+                            <h4 style="text-align:center">@freshTotal.ToString()</h4>
+
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        }
+    </div>
+</body>
+</html>

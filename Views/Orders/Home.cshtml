@@ -1,0 +1,566 @@
+﻿
+@model List<ShoppingApplication.Models.Viewmodel.Order>
+@{
+    Layout = "~/Views/Shared/_ShoppingLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Home</title>
+    <script src="~/Scripts/appsettings.js"></script>
+    <script src="~/Scripts/ordersAll.js"></script>
+
+    <style>
+        .popup-overlay {
+            visibility: hidden;
+        }
+
+        .popup-content {
+            visibility: hidden;
+        }
+
+        .disamount {
+            color: red;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+
+            $('#printDiv').hide();
+            $('#divamountdetail').hide();
+
+            $('html').attr('lang', $('#hdnLang').val());
+            $('html').attr('dir', $('#hdnDir').val());
+
+            loadDiv("all");
+
+            $('#liAllorder').click(function () {
+
+                loadDiv("all");
+
+            });
+
+            $('#liPendingorder').click(function () {
+
+                loadDiv("pending");
+
+            });
+
+            $('#liAcceptedorder').click(function () {
+
+                loadDiv("accepted");
+
+            });
+
+            $('#liCompletedorder').click(function () {
+
+                loadDiv("completed");
+
+            });
+
+            $('#liCancelledorder').click(function () {
+
+                loadDiv("cancelled");
+
+            });
+
+
+            function loadDiv(divname) {
+
+
+                $('#divCancelledorder').hide();
+                $('#divPendingorder').hide();
+                $('#divAcceptedorder').hide();
+                $('#divCompletedorder').hide();
+                $('#divAllorder').hide();
+                $('#divorderItem').hide();
+                //$('#divOrderTotal').hide();
+                $('#divOrderTotal').empty();
+                $('#divDelivery').hide();
+
+
+                if (divname === "all") {
+                    $('#divAllorder').show();
+                }
+                else if (divname === "pending") {
+                    $('#divPendingorder').show();
+                }
+                else if (divname === "accepted") {
+                    $('#divAcceptedorder').show();
+                }
+                else if (divname === "completed") {
+                    $('#divCompletedorder').show();
+                }
+                else if (divname === "cancelled") {
+                    $('#divCancelledorder').show();
+                }
+
+            }
+
+
+            $('.dataRow2').click(function () {
+                console.log(this);
+
+                var oId = $(this).attr("orderid");
+
+                $.ajax({
+                    type: "GET",
+                    url: appBaseUrl + "/apiorder/getbyid/" + oId,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+
+
+
+                        var orderInfo = JSON.parse(response);
+                        var delivery = orderInfo.delivery;
+
+                        var ordTotalAmount = delivery.TotalAmount;
+                        var ordDisAmount = delivery.DisAmount;
+                        var ordNetAmounT = delivery.NetAmounT;
+                        var ordDisType = delivery.DisType;
+                        var ordDiscountId = delivery.DiscountId;
+
+
+
+                        console.log(orderInfo);
+                        var totalAmount = "";
+
+                        $("#divorderItem").empty();
+
+                        $("#divorderItem").append("<h5 class='mb - 4'> Items</h5 ><hr/>");
+                        $.each(orderInfo.orderItems, function (index, orderItm) {
+                            console.log(orderItm.OrderId)
+
+                            totalAmount = orderItm.TotalAmount;
+
+                            var divData = "<div class='d-flex justify-content-between my-2 pb-3 border-bottom'> <div><strong>" + orderItm.Item + "</strong></div><div><strong>" + orderItm.Amount + "</strong></div>";
+
+
+                            $("#divorderItem").append(divData);
+
+
+                        });
+
+                        $("#divOrderTotal").empty();
+
+
+
+                        if (parseInt(ordDiscountId) > parseInt(0)) {
+
+
+
+                            $('#divOrderTotal').append("<div class='d-flex justify-content-between my-2 pb-3 border-bottom'> <div><strong>Sub Total</strong></div><div><strong>" + ordTotalAmount + "</strong></div>");
+                            $('#divOrderTotal').append("<div class='d-flex justify-content-between my-2 pb-3 border-bottom'> <div><strong>Discount</strong></div><div><strong>" + ordDisAmount + "</strong></div>");
+                            $('#divOrderTotal').append("<div class='d-flex justify-content-between my-2 pb-3 border-bottom'> <div><strong>Net Amount</strong></div><div><strong>" + ordNetAmounT + "</strong></div>");
+
+                        }
+                        else {
+                            $('#divOrderTotal').append("<div><strong>Total</strong></div>   <div><strong> " + ordTotalAmount + " KWD </strong></div>");
+
+                        }
+
+                        $("#divDelAddr").empty();
+                        $('#divDelAddr').append(delivery.Address);
+                        //  $('#divDelAddr').append("<div>" + delivery.ContactNumber + "</div>div>" + delivery.Email + "</div > ");
+
+
+
+
+
+                        $("#divDelContact").empty();
+                        $("#divDelContact").append("<div> " + delivery.ContactNumber + "</div><div></div>");
+
+
+                        $('#divorderItem').show();
+                        $('#divOrderTotal').show();
+                        $('#divDelivery').show();
+                        //  $("#divOrderTotal").show();
+
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                        alert("Failure");
+                    },
+                    error: function (response) {
+                        alert(response);
+                        alert("Error");
+                    }
+                });
+
+            });
+
+
+            /*------Printing------*/
+
+            $("#btnReceiptPrint").click(function () {
+
+
+
+                //$('.popup-content').addClass('active');
+
+                var id = $('#btnReceiptPrint').attr('productid');
+
+
+
+                var optLang = $('input[name="printlanguage"]:checked').val();
+
+                window.open(host + "/Orders/print?oid=" + id + "&la=" + optLang);
+
+            });
+
+        });
+    </script>
+</head>
+<body>
+    
+    <div>
+        <input type="hidden" id="hdncancelclicked" value="0" />
+
+    </div>
+    <div class="container-fluid py-4">
+        <div class="nav-wrapper position-relative end-0">
+            <ul class="nav nav-pills nav-fill p-1" role="tablist">
+                <li class="nav-item" id="liAllorder">
+                    <a class="nav-link mb-0 px-0 py-1 active"
+                       data-bs-toggle="tab"
+                       href="#profile-tabs-simple"
+                       role="tab"
+                       aria-controls="profile"
+                       aria-selected="true">
+                        @Resources.Global.All
+                    </a>
+                </li>
+                <li class="nav-item" id="liPendingorder">
+                    <a class="nav-link mb-0 px-0 py-1"
+                       data-bs-toggle="tab"
+                       href="#dashboard-tabs-simple"
+                       role="tab"
+                       aria-controls="dashboard"
+                       aria-selected="false">
+                        @Resources.Global.Pending
+                    </a>
+                </li>
+                <li class="nav-item" id="liAcceptedorder">
+                    <a class="nav-link mb-0 px-0 py-1"
+                       data-bs-toggle="tab"
+                       href="#dashboard-tabs-simple"
+                       role="tab"
+                       aria-controls="dashboard"
+                       aria-selected="false">
+                        @Resources.Global.Accepted
+                    </a>
+                </li>
+                <li class="nav-item" id="liCompletedorder">
+                    <a class="nav-link mb-0 px-0 py-1"
+                       data-bs-toggle="tab"
+                       href="#dashboard-tabs-simple"
+                       role="tab"
+                       aria-controls="dashboard"
+                       aria-selected="false">
+                        @Resources.Global.Completed
+                    </a>
+                </li>
+                <li class="nav-item" id="liCancelledorder">
+                    <a class="nav-link mb-0 px-0 py-1"
+                       data-bs-toggle="tab"
+                       href="#dashboard-tabs-simple"
+                       role="tab"
+                       aria-controls="dashboard"
+                       aria-selected="false">
+                        @Resources.Global.Cancelled
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+
+
+        <div class="row mt-4" id="divAcceptedorder">
+            <div class="col-12 mb-lg-0 mb-4">
+                <div class="card">
+                    <div class="card-header pb-0 p-3">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-2"></h6>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-items-center">
+                            <tbody id="accepteditembody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <nav>
+                            <ul id="acceptedpagingli" class="pagination justify-content-end pagination-warning">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4" id="divCompletedorder">
+            <div class="col-12 mb-lg-0 mb-4">
+                <div class="card">
+                    <div class="card-header pb-0 p-3">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-2"></h6>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-items-center">
+                            <tbody id="completeditembody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <nav>
+                            <ul id="completedpagingli" class="pagination justify-content-end pagination-warning">
+                            </ul>
+                        </nav>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="row mt-4" id="divCancelledorder">
+            <div class="col-12 mb-lg-0 mb-4">
+                <div class="card">
+                    <div class="card-header pb-0 p-3">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-2"></h6>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-items-center">
+                            <tbody id="cancelleditembody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <nav>
+                            <ul id="cancelledpagingli" class="pagination justify-content-end pagination-warning">
+                            </ul>
+                        </nav>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row mt-4" id="divPendingorder">
+            <div class="col-12 mb-lg-0 mb-4">
+                <div class="card">
+                    <div class="card-header pb-0 p-3">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-2"></h6>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-items-center">
+                            <tbody id="pendingitemtbody">
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <div>
+                        <nav>
+                            <ul id="pendpagingli" class="pagination justify-content-end pagination-warning">
+                            </ul>
+                        </nav>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="row mt-4" id="divAllorder">
+            <div class="col-12 mb-lg-0 mb-4">
+                <div class="card">
+                    <div class="card-header pb-0 p-3">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-2"></h6>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="allitemtbody" class="table align-items-center">
+                        </table>
+                    </div>
+
+                    <div>
+                        <nav>
+                            <ul id="pagingli" class="pagination justify-content-end pagination-warning">
+                                @*<li class="page-item disabled">
+                                        <a class="page-link" href="javascript:;" tabindex="-1">
+                                            <i class="fa fa-angle-left"></i>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>*@
+                                @*<li class="page-item"><a class="page-link" href="javascript:;">1</a></li>
+                                    <li class="page-item active"><a class="page-link" href="javascript:;">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="javascript:;">3</a></li>*@
+                                @*<li class="page-item">
+                                        <a class="page-link" href="javascript:;">
+                                            <i class="fa fa-angle-right"></i>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>*@
+                            </ul>
+                        </nav>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+        <div class="mt-5" id="divamountdetail">
+            <div class="card">
+                <div class="card-header pb-0 p-3"></div>
+                <div class="card-body">
+                    <div class="row gy-2">
+                        <div class="col-12 col-md-6">
+                            <div class="p-2" id="divorderItem">
+
+
+                                @*  <h5 class="mb-4">
+                                        Items
+                                    </h5>
+                                    <hr>
+                                                                <div class="d-flex justify-content-between my-2 pb-3 border-bottom">
+                                            <div><strong>1 X Chicken Legs</strong></div>
+                                            <div><strong>KWD 0.500</strong></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between my-2 pb-3 border-bottom">
+                                            <div><strong>1 X Chicken Legs</strong></div>
+                                            <div><strong>KWD 0.500</strong></div>
+                                        </div> <div class="d-flex justify-content-between my-2 pb-3 border-bottom">
+                                            <div><strong>1 X Chicken Legs</strong></div>
+                                            <div><strong>KWD 0.500</strong></div>
+                                        </div> <div class="d-flex justify-content-between my-2 pb-3 border-bottom">
+                                            <div><strong>1 X Chicken Legs</strong></div>
+                                            <div><strong>KWD 0.500</strong></div>
+                                        </div>*@
+
+                            </div>
+                            @*<div id="divOrderTotal" class="d-flex justify-content-between my-5 pb-3 text-dark">*@
+                                <div id="divOrderTotal" class="p-2">
+                                    @*<div><strong>Total</strong></div>
+            <div><strong>KWD 2.000</strong></div>*@
+                                </div>
+                            </div>
+
+                        <div id="divDelivery" class="col-12 col-md-6 bg-light rounded">
+                            <div class="p-2">
+                                <h5 class="mb-4">
+                                    Delivery Address
+                                </h5>
+                                <div id="divDelAddr">
+                                    @*City: Farwaniya,
+                                        Block: City Name,
+                                        Street: Street Name,
+                                        House: 123*@
+
+                                </div>
+                                <h5 class="mt-4">
+                                    Contact Info
+                                </h5>
+                                <div id="divDelContact">
+                                    @*<div>67752067</div>
+                                        <div>
+                                            Salih@gmail.dom
+                                        </div>*@
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 bg-light rounded" id="printDiv">
+
+                            <div class="p-2">
+                                <h5 class="mb-4">
+                                    Payment Method
+                                </h5>
+                                <div class="d-flex justify-content-between my-2 pb-3">
+                                    <div><strong>KENT</strong></div>
+                                    <div><strong>KWD 2.500</strong></div>
+                                </div>
+                            </div>
+
+                            <div class="p-2">
+
+                                <div class="d-flex justify-content-between my-2 pb-3">
+                                    <div>
+                                        <h5 class="mb-1">
+                                            Print
+                                        </h5>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="printoption" printtype="A4" id="customRadio1">
+                                            <label class="custom-control-label" for="customRadio1">A4</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="printoption" printtype="thermal" id="customRadio2">
+                                            <label class="custom-control-label" for="customRadio2">Thermal</label>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-2">
+                                            Language
+                                        </h5>
+                                        <div class="form-check">
+                                            <input value="english" class="form-check-input printlanguage" type="radio" name="printlanguage" id="customRadio11" lng="english">
+                                            <label class="custom-control-label" for="customRadio11">English</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input value="arabic" class="form-check-input printlanguage" type="radio" name="printlanguage" id="customRadio22" lng="arabic">
+                                            <label class="custom-control-label" for="customRadio22">Arabic</label>
+                                        </div>
+                                    </div>
+                                    <div class="my-auto">
+                                        <h5 class="mb-2">
+                                            Status
+                                        </h5>
+                                        <div class="badge bg-success">Delivered</div>
+                                        <div class="form-check">
+
+                                            <input type="button" value="print" id="btnReceiptPrint" productid="" />
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

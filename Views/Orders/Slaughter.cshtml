@@ -1,0 +1,202 @@
+﻿
+
+@model List<ShoppingApplication.Models.Viewmodel.Slaughter>
+
+@{
+    ViewBag.Title = "Slaughter";
+    Layout = "~/Views/Shared/_ShoppingLayout.cshtml";
+
+
+}
+<head>
+    <script src="~/Scripts/appsettings.js"></script>
+
+</head>
+<script type="text/javascript">
+
+    $('html').attr('lang', $('#hdnLang').val());
+    $('html').attr('dir', $('#hdnDir').val());
+
+    $(function () {
+        $("#btnSubmit").click(function () {
+            /// window.open("http://localhost:50174/orders/export");
+            //window.print();
+
+            //$('.popup-content').addClass('active');
+            window.open(host + "/Orders/slaughterprint");
+
+        });
+    });
+</script>
+
+<style>
+
+    @@page {
+        size: 7in 9.25in;
+        margin: 27mm 16mm 27mm 16mm;
+    }
+
+    /* .slaughterData tr
+    {
+        border:1px;
+        border-style:solid;
+
+    }
+
+    .slaughterData td {
+        border: 1px;
+        border-style: solid;
+    }*/
+
+    .printme {
+        display: none;
+    }
+
+    @@media print {
+        .no-printme {
+            display: none;
+        }
+
+        .printme {
+            display: block;
+        }
+    }
+</style>
+
+<div>
+
+    <div class="container-fluid py-4">
+        <section class="">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="no-printme">Slaughter List</h5>
+
+                    <input type="submit" id="btnSubmit" value="Print" class="btn btn-dark btn-sm d-block d-print-none" />
+
+                    @*@using (Html.BeginForm("Export", "Orders", FormMethod.Post))
+                        {
+                            <input type="hidden" name="GridHtml" />
+                            <input type="submit" id="btnSubmit" value="Report" />
+                        }*@
+
+
+                </div>
+
+                @if (Model != null)
+                {
+                    int frozenTotal = 0;
+                    int freshTotal = 0;
+                    int eggsTotal = 0;
+
+                    <table id="slaughterData" class="slaughterData table table-sm">
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <h5>Delivery Date</h5>
+
+                                </td>
+                                <td>
+                                    <div>
+                                        <h5>Name</h5>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <h5>Frozen</h5>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div>
+                                        <h5>Fresh Eggs</h5>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="ms-4">
+                                        <h5>Fresh</h5>
+                                    </div>
+                                </td>
+
+                            </tr>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+
+                                        <h7>@item.DeliveryDate</h7>
+
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <h7>@item.Name / @item.Name_Ar</h7>
+                                        </div>
+                                    </td>
+
+                                    <td style="text-align:center">
+                                        <div>
+                                            <h7 style="text-align:center">
+                                                @item.Frozen
+                                                @{
+                                                    frozenTotal = frozenTotal + item.Frozen;
+                                                }
+                                            </h7>
+                                        </div>
+                                    </td>
+
+                                    <td style="text-align:center">
+                                        <div>
+                                            <h7 style="text-align:center">
+                                                @item.FreshEggs
+                                                @{
+                                                    eggsTotal = eggsTotal + item.FreshEggs;
+                                                }
+                                            </h7>
+                                        </div>
+                                    </td>
+
+                                    <td style="text-align:center">
+
+                                        <h7 >
+                                            @item.Fresh
+                                            @{
+                                                freshTotal = freshTotal + item.Fresh;
+                                            }
+                                        </h7>
+
+                                    </td>
+                                </tr>
+
+                            }
+
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <h6>Total</h6>
+
+                                </td>
+                                <td>
+                                    <h6 style="text-align:center">@frozenTotal.ToString()</h6>
+
+                                </td>
+                                <td>
+                                    <h6 style="text-align:center">@eggsTotal.ToString()</h6>
+
+                                </td>
+                                <td>
+                                    <h6 style="text-align:center">@freshTotal.ToString()</h6>
+
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                }
+
+            </div>
+        </section>
+    </div>
+</div>
+

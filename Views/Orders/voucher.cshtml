@@ -1,0 +1,338 @@
+﻿
+@model List<ShoppingApplication.Models.Viewmodel.Voucher>
+@{
+    ViewBag.Title = "voucher";
+    Layout = "~/Views/Shared/_ShoppingLayout.cshtml";
+}
+
+<script src="~/Scripts/appsettings.js"></script>
+<script>
+
+    $(document).ready(function () {
+
+        $('html').attr('lang', $('#hdnLang').val());
+        $('html').attr('dir', $('#hdnDir').val());
+
+        $('.offertype').click(function () {
+
+
+            var val = $(this).val();
+            $('.offerlbl').text('');
+            if (val == 'percentage') {
+                $('.offerlbl').text('Discount %');
+            }
+            else if (val == 'amount') {
+                $('.offerlbl').text('Discount Amount');
+            }
+
+
+
+        });
+
+        $('#btngetvoucher').click(function () {
+
+
+            $.ajax({
+                type: "GET",
+                url: appBaseUrl + "apiorder/GetVoucher",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $("#voucherdisplay").text(response);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                    alert("Failure");
+                },
+                error: function (response) {
+                    alert(response);
+                    alert("Error");
+                }
+            });
+
+        });
+
+
+        $('#btnSave').click(function () {
+
+
+            var rbvalue = $("input[name='offertype']:radio:checked").val();
+            var offerAmount = $("#txtPercent").val();
+            var offerPercent = $("#txtPercent").val();
+
+
+            if (rbvalue == 'percentage') {
+                offerAmount = 0;
+            }
+
+            if (rbvalue == 'amount') {
+                offerPercent = 0;
+            }
+
+            if ($("#txtStartDate").val().length == 0) {
+
+                alert("Offer Start Date");
+                return false;
+            }
+
+            if ($("#txtEndDate").val().length == 0) {
+
+                alert("Offer End Date");
+                return false;
+            }
+
+            if (offerAmount == 0 && offerPercent == 0) {
+
+
+                alert("Enter Value or Percent");
+
+                return false;
+            }
+
+            if ($("#voucherdisplay").text().length == 0) {
+
+                alert("Generate Code");
+
+                return false;
+            }
+
+            var voucherInfo = {
+                "CreatedBy": $('#appCurrentUserId').val(),
+                "startdate": $("#txtStartDate").val(),
+                "enddate": $("#txtEndDate").val(),
+                "OfferType": rbvalue,
+                "OfferPercent": offerPercent,
+                "OfferAmount": offerAmount,
+                "Name": $("#voucherdisplay").text()
+            };
+
+
+            $.ajax({
+                type: "POST",
+                url: appBaseUrl + "apiorder/voucher",
+                data: JSON.stringify(voucherInfo),// now data come in this function
+                contentType: "application/json; charset=utf-8",
+                crossDomain: true,
+                dataType: "json",
+                success: function (data, status, jqXHR) {
+
+                    $('#addVoucherForm').removeClass('show');
+                    window.location.href = "../Orders/voucher";
+                },
+
+                error: function (jqXHR, status) {
+                    // error handler
+                    console.log(jqXHR);
+                    alert('fail' + status.code);
+                }
+            });
+
+        })
+
+    });
+
+</script>
+
+<div>
+
+    <div class="container-fluid py-4">
+        <section class="">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Voucher List</h5>
+
+
+                    <div class="my-3">
+                        <div class="text-end">
+                            <button class="btn btn-dark"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#addVoucherForm"
+                                    aria-expanded="true"
+                                    aria-controls="collapseOne">
+                                Add Voucher
+                            </button>
+                        </div>
+                        <div id="addVoucherForm" class="collapse">
+
+                            <div class="border rounded p-2 shadow-md">
+
+                                <div class="form-group my-2">
+                                    <label>Offer Start Date</label>
+                                    <input type="date" id="txtStartDate" class="form-control" />
+                                </div>
+
+                                <div class="form-group my-2">
+                                    <label>Offer End Date</label>
+                                    <input type="date" id="txtEndDate" class="form-control" />
+                                </div>
+
+                                <div class="form-group my-2">
+                                    @*<label>Offer Type</label>*@
+                                    <span>
+
+                                        <input type="radio" name="offertype" value="percentage" class="offertype" checked="checked" />
+                                        <label>
+                                            Percentage
+                                        </label>
+                                    </span>
+                                    <span>
+                                        <input type="radio" name="offertype" value="amount" class="offertype" />
+                                        <label>
+                                            Amount
+                                        </label>
+                                    </span>
+
+                                </div>
+
+                                <div class="form-group my-2">
+                                    <label class="offerlbl">Discount % </label>
+                                    <input type="number" id="txtPercent" class="form-control" />
+                                    <input type="button" id="btngetvoucher" class="btn btn-primary" value="Get Code" />
+                                    <h3 id="voucherdisplay" style="color:red"></h3>
+                                </div>
+
+
+
+
+                                <div class="form-group my-2">
+                                    <input type="button" id="btnSave" class="btn btn-primary" value="Create Voucher" />
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="my-4">
+
+
+
+
+
+                    @if (Model != null)
+                    {
+
+                        <table class="table align-items-center">
+                            <tbody>
+                                <tr class="dataRow">
+                                    <td class="w-30">
+                                        <div class="ms-4">
+                                            <h5>Voucher Code</h5>
+                                        </div>
+                                    </td>
+                                    <td class="w-30">
+                                        <div class="ms-4">
+                                            <h5>Start Date</h5>
+                                        </div>
+                                    </td>
+                                    <td class="w-30">
+                                        <div class="ms-4">
+                                            <h5>End Date</h5>
+                                        </div>
+                                    </td>
+                                    <td class="w-30">
+                                        <div class="ms-4">
+                                            <h5>Offer Type</h5>
+                                        </div>
+                                    </td>
+
+                                    <td class="w-30">
+                                        <div class="ms-4">
+                                            <h5>Offer</h5>
+                                        </div>
+                                    </td>
+
+
+                                </tr>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="dataRow">
+                                        <td class="w-30">
+                                            <div class="ms-4">
+                                                <p class="text-xs font-weight-bold mb-0">
+                                                    @item.Name
+                                                </p>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="ms-4">
+                                                <p class="text-xs font-weight-bold mb-0">
+                                                    @item.startdate
+                                                </p>
+
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="ms-4">
+                                                <p class="text-xs font-weight-bold mb-0">
+                                                    @item.enddate
+                                                </p>
+
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="ms-4">
+                                                <p class="text-xs font-weight-bold mb-0">
+                                                    @item.OfferType
+                                                </p>
+
+                                            </div>
+                                        </td>
+                                        <td class="align-middle text-sm">
+                                            <div class="ms-4">
+
+                                                @if (item.OfferType.ToLower() == "amount")
+                                                {
+                                                    <p class="text-xs font-weight-bold mb-0">
+                                                        @item.OfferAmount
+                                                    </p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-xs font-weight-bold mb-0">
+                                                        @item.OfferPercent
+                                                    </p>
+                                                }
+
+
+
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+
+                    }
+
+
+                </div>
+
+
+
+                <div id="divRegister">
+
+                    <div class="row">
+
+
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+    <div>
+
+
+    </div>
+
+</div>
+

@@ -1,0 +1,142 @@
+﻿
+@model ShoppingApplication.Models.Viewmodel.OrderInfo
+@{
+    Layout = null;
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<!DOCTYPE html>
+
+<script>
+
+    $(document).ready(function () {
+
+        // alert("page is loaded");
+
+        //setTimeout(function () {
+        //    alert('page is loaded and 1 minute has passed');
+        //}, 60000);
+
+        window.print();
+    });
+
+
+
+</script>
+
+<html lang="@ViewBag.lang" dir="@ViewBag.dir">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Print</title>
+    <style>
+
+        .receipt tr {
+            border: 1px;
+            border-style: solid;
+            border-color: black;
+        }
+
+        .receipt td {
+            border: 1px;
+            border-color: black;
+            padding: 10px;
+        }
+        .disamount {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        @if (Model != null)
+        {
+
+
+
+            if (Model.orderItems != null)
+            {
+                int count = 1;
+
+                <div>
+                    <strong style="color:red;text-underline-offset:auto;">
+                        OrderKUPCO.net Daily Demand For Online
+                    </strong>
+                </div>
+
+                <table class="receipt">
+
+                    <tr>
+
+                        <td> <strong> Items  </strong> </td>
+                        <td>
+                            <strong> Amount  </strong>  
+                        </td>
+                    </tr>
+
+                    @foreach (var item in Model.orderItems)
+                    {
+
+
+                        <tr>
+
+                            <td>@item.Item  </td>
+                            <td>
+                                @item.Amount.ToString() 
+                                @{count = count + 1;
+                                }
+                            </td>
+                        </tr>
+
+
+                    }
+
+                    @if (Model.delivery != null)
+                    {
+                        if (Convert.ToInt32(Model.delivery.DisAmount) > 0)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>Sub Total</strong>
+                                </td>
+                                <td>
+                                    <strong>@Model.delivery.TotalAmount <label>KWD</label> </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Dicount</strong>
+                                </td>
+                                <td>
+                                    <strong class="disamount">@Model.delivery.DisAmount <label>KWD</label> </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Net Amount</strong>
+                                </td>
+                                <td>
+                                    <strong >@Model.delivery.NetAmounT <label>KWD</label> </strong>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>
+                                    <strong>Total Amount</strong>
+                                </td>
+                                <td>
+                                    <strong>@Model.delivery.TotalAmount  <label>KWD</label> </strong>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </table>
+            }
+
+        }
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,352 @@
+﻿
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_ShoppingLayout.cshtml";
+}
+
+<head>
+
+    <script src="~/Scripts/appsettings.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            $('html').attr('lang', $('#hdnLang').val());
+            $('html').attr('dir', $('#hdnDir').val());
+
+            console.log(localStorage.getItem("selectedprodlist"));
+
+            var optCustCity = $('#optCustCity');
+
+            $.ajax({
+                type: "GET",
+                url: appBaseUrl + "apicustomer/cities",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var cityList = JSON.parse(response);
+
+                    var loopCount = 0;
+                    $(cityList).each(function () {
+
+
+                        var option = $("<option />");
+
+                        option.html(this.Name);
+                        option.val(this.Id);
+                        option.attr('driverId', this.DriverId);
+                        optCustCity.append(option);
+                        loopCount = loopCount + 1;
+
+                    });
+
+
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                    alert("Failure");
+                },
+                error: function (response) {
+                    alert(response);
+                    alert("Error");
+                }
+            });
+
+
+            $('#btnSearch').click(function () {
+
+                $.ajax({
+                    type: "GET",
+                    url: appBaseUrl + "apicustomer/getbynumber/" + $('#txtCustMobile').val(),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var customer = JSON.parse(response);
+                        console.log(customer);
+
+                        if (customer.Id == 0) {
+
+                            alert("not exist");
+                        }
+
+                        $('.delivery-place.office').removeClass('active');
+                        $('.delivery-place.home').removeClass('active');
+
+                        $('#txtRCustName').val(customer.FullName);
+                        $('#txtRCustMobile').val(customer.Mobile);
+                        $('#optCustCity').val(customer.CityId);
+                        $('#txtRCustBlock').val(customer.Address1);
+                        $('#txtRCustStreet').val(customer.Address2);
+                        $('#txtRCustBuilding').val(customer.Address3);
+                        $('#hdnCustomerId').val(customer.Id);
+                        $('#txtRCustNote').val(customer.Note);
+                        $('.delivery-place.' + customer.AddressType).addClass('active');
+
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                        alert("Failure");
+                    },
+                    error: function (response) {
+                        alert(response);
+                        alert("Error");
+                    }
+                });
+
+            })
+
+            $('#btnSave').click(function () {
+
+
+                var cityId = $('#optCustCity').find(":selected").val();
+                var cityName = $('#optCustCity').find(":selected").text();
+                var driverId = $('#optCustCity').find(":selected").attr('driverId');
+
+
+                var validated = false;
+
+                if ($('#txtRCustName').val() == "") {
+                    alert("Enter Customer Name");
+                    return false;
+                }
+
+
+                if (typeof ($(".delivery-place.active").attr("addresstype")) === "undefined") {
+                    alert("Select Address Type");
+                    return false;
+                }
+
+
+
+                if ($('#txtRCustMobile').val().length == 0) {
+                    alert("Enter Mobile Number");
+                    return false;
+                }
+
+                if ($('#txtRCustMobile').val().length != 8) {
+                    alert("Enter Valid Mobile Number");
+                    return false;
+                }
+
+
+
+                var data = {
+                    "Id": $('#hdnCustomerId').val(), "FullName": $('#txtRCustName').val(),
+                    "Mobile": $('#txtRCustMobile').val(),
+                    "City": cityName,
+                    "CityId": cityId,
+                    "DriverId": driverId,
+                    "Address1": $('#txtRCustBlock').val(),
+                    "Address2": $('#txtRCustStreet').val(),
+                    "Address3": $('#txtRCustBuilding').val(),
+                    "SelectedItem": $('#hdnSelectedItem').val(),
+                    "AddressType": $(".delivery-place.active").attr("addresstype"),
+                    "SelectedProd": localStorage.getItem("selectedprodlist"),
+                    "Note": $('#txtRCustNote').val()
+                };
+
+                localStorage.setItem("productsWithCustomer", JSON.stringify(data));
+
+                window.location.href = "../Orders/Confirm";
+
+
+            });
+
+            $('#btnSave1').click(function () {
+
+
+                var apiUrl = appBaseUrl + "apicustomer";
+
+
+
+                var data = {
+                    "Id": $('#hdnCustomerId').val(), "FullName": $('#txtRCustName').val(),
+                    "Mobile": $('#txtRCustMobile').val(),
+                    "City": $('#optCustCity').val(),
+                    "Address1": $('#txtRCustBlock').val(),
+                    "Address2": $('#txtRCustStreet').val(),
+                    "Address3": $('#txtRCustBuilding').val(),
+                    "Email": "",
+                    "SelectedItem": $('#hdnSelectedItem').val(),
+                    "AddressType": $(".delivery-place.active").attr("addresstype"),
+                    "SelectedProd": localStorage.getItem("selectedprodlist"),
+                    "Note": $('#txtRCustNote').val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: apiUrl,
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    crossDomain: true,
+                    dataType: "json",
+                    success: function (data, status, jqXHR) {
+
+                        window.location.href = "../Orders/Home";
+
+
+                    },
+
+                    error: function (jqXHR, status) {
+                        // error handler
+                        console.log(jqXHR);
+                        alert('fail' + status.code);
+                    }
+                });
+
+            });
+
+
+            $(".delivery-place").click(function () {
+
+                
+
+                $(".delivery-place").removeClass('active');
+                $(this).addClass('active');
+
+
+
+
+            });
+
+
+        });
+
+
+
+        function fetchLocalstorage() {
+
+            alert(window.localStorage.getItem("selectedItem"));
+        }
+
+    </script>
+</head>
+
+
+
+
+<input type="hidden" id="hdnSelectedItem" />
+<input type="hidden" id="hdnCustomerId" />
+
+<div class="container-fluid py-4" onload="fetchLocalstorage()">
+    <section class="">
+        <div class="card">
+            <div class="card-body">
+                <div class="page-content">
+                    <div id="divLogin">
+                        <h2 class="my-4 text-app-blue-light">
+                            @Resources.Global.Enter_Mobile_No
+                        </h2>
+
+                        <div class="row">
+                            <div class="col-9 col-md-4">
+                                <input type="text" pattern="\d*"
+                                       id="txtCustMobile"
+                                       class="form-control" maxlength="8" />
+                            </div>
+                            <div class="col-3 col-md-2">
+                                <input type="button" class="btn btn-primary" id="btnSearch" value="@Resources.Global.Search" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="divRegister">
+                        <h2 class="mt-5 text-app-blue-light">
+                            @Resources.Global.Customer_Info
+                        </h2>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+
+                                <div class="form-group my-2">
+                                    <label>@Resources.Global.Delivery_Place</label>
+                                    <input type="hidden"
+                                           id="txtRCustDeliveryPlace"
+                                           value="building"
+                                           class="form-control" />
+                                    <div class="d-flex">
+                                        <div id="dp-building"
+                                             class="position-relative delivery-place me-2 active office" addresstype="office">
+                                            <span>
+                                                <i class="fa fa-check-circle status"></i>
+                                            </span>
+                                            <span>
+                                                <i class="fa fa-4x fa-building icon"></i>
+                                            </span>
+                                        </div>
+                                        <div id="dp-home" class="position-relative delivery-place me-2 home" addresstype="home">
+                                            <span>
+                                                <i class="fa fa-check-circle status"></i>
+                                            </span>
+                                            <span><i class="fa fa-4x fa-home icon"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group my-2">
+                                    <label>
+                                        @Resources.Global.Fullname
+                                    </label>
+                                    <input type="text"
+                                           id="txtRCustName"
+                                           class="form-control" maxlength="50" />
+                                </div>
+                                <div class="form-group my-2">
+                                    <label>
+                                        @Resources.Global.Mobile
+                                    </label>
+                                    <input type="text" pattern="\d*"
+                                           id="txtRCustMobile"
+                                           class="form-control" maxlength="8" />
+                                </div>
+                                <div class="form-group my-2">
+                                    <label>
+                                        @Resources.Global.City
+                                    </label>
+                                    <select id="optCustCity" class="form-control">
+                                        
+                                    </select>
+                                </div>
+                                <div class="form-group my-2">
+                                    <label>
+                                        @Resources.Global.Block
+                                    </label>
+                                    <input type="text"
+                                           id="txtRCustBlock"
+                                           class="form-control" />
+                                </div>
+                                <div class="form-group my-2">
+                                    <label>
+                                        @Resources.Global.Street
+                                    </label>
+                                    <input type="text"
+                                           id="txtRCustStreet"
+                                           class="form-control" />
+                                </div>
+                                <div class="form-group my-2">
+                                    <label>
+                                        @Resources.Global.Building_House
+                                    </label>
+                                    <input type="text"
+                                           id="txtRCustBuilding"
+                                           class="form-control" />
+                                </div>
+
+
+
+                                <div class="form-group my-2">
+                                    <label>@Resources.Global.Note</label>
+                                    <textarea class="form-control" id="txtRCustNote" rows="3"></textarea>
+                                </div>
+
+                                <div>
+                                    <input type="button" id="btnSave" class="btn btn-primary w-100" value="@Resources.Global.Next" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+

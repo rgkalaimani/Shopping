@@ -1,0 +1,367 @@
+﻿
+@{
+    ViewBag.Title = "Salesreport";
+    Layout = "~/Views/Shared/_ShoppingLayout.cshtml";
+}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KUPCO | Sales Report</title>
+
+    <link rel="apple-touch-icon"
+          sizes="180x180"
+          href="../assets/fav/apple-touch-icon.png" />
+    <link rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="../assets/fav/favicon-32x32.png" />
+    <link rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="../assets/fav/favicon-16x16.png" />
+    <link rel="manifest" href="../assets/fav/site.webmanifest" />
+
+    <link id="css-ltr"
+          rel="stylesheet"
+          href="../assets/css/bootstrap.min.css" />
+    <!-- Keep linkBootstrap for dynamic language -->
+    <link rel="stylesheet" href="/" id="linkBootstrap" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+          integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+    <!-- Nucleo Icons -->
+    <link href="../Content/assets/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="../Content/assets/css/nucleo-svg.css" rel="stylesheet" />
+    <link id="pagestyle" href="../Content/assets/css/dashboard.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../Content/assets/css/custom.css" />
+
+
+    <script src="~/Scripts/appsettings.js"></script>
+
+
+</head>
+
+
+<body class="g-sidenav-show bg-gray-100">
+    <div class="min-height-300 bg-primary position-fixed w-100 bg-app-yg"></div>
+
+    <main class="main-content position-relative border-radius-lg">
+
+        <div class="container-fluid py-4">
+            <div class="row my-3">
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card">
+                        <div class="card-body p-3">
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="numbers">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold">
+                                            Today's Order
+                                        </p>
+                                        <h5 class="font-weight-bolder" id="todayorder"></h5>
+
+                                    </div>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                                        <i class="ni ni-money-coins text-lg opacity-10"
+                                           aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card">
+                        <div class="card-body p-3">
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="numbers">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold">
+                                            Today's Sales
+                                        </p>
+                                        <h5 class="font-weight-bolder" id="todaysales"></h5>
+
+                                    </div>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                                        <i class="ni ni-world text-lg opacity-10"
+                                           aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card">
+                        <div class="card-body p-3">
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="numbers">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold">
+                                            Current Month Order
+                                        </p>
+                                        <h5 class="font-weight-bolder" id="crmonthorder"></h5>
+
+                                    </div>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                                        <i class="ni ni-paper-diploma text-lg opacity-10"
+                                           aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card">
+                        <div class="card-body p-3">
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="numbers">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold">
+                                            Current Month Sales
+                                        </p>
+                                        <h5 class="font-weight-bolder" id="crmonthsales"></h5>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
+                                        <i class="ni ni-cart text-lg opacity-10"
+                                           aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-lg-12 mb-lg-0 mb-4">
+                    <div class="card">
+                        <div class="card-header pb-0 p-3">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="mb-2">Orders by Call-center users</h6>
+                            </div>
+                        </div>
+                        <div class="card-body">
+
+                            <div class="table-responsive">
+                                <table class="table align-items-center">
+                                    <tbody id="reportBody">
+                                        @*<tr>
+                                                <td class="w-30">
+                                                    27/02/2023
+                                                </td>
+                                                <td>
+                                                    <div class="text-start">
+                                                        <p class="text-xs font-weight-bold mb-0">Mohamed Salihu</p>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="text-center">
+                                                        <h6 class="text-sm mb-0">15</h6>
+                                                    </div>
+                                                </td>
+                                            </tr>*@
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row mt-4">
+                <div class="col-lg-12 mb-lg-0 mb-4">
+                    <div class="card">
+                        <div class="card-header pb-0 p-3">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="mb-2">Orders Delivery Info</h6>
+                            </div>
+                        </div>
+                        <div class="card-body">
+
+                            <div class="table-responsive">
+                                <table class="table align-items-center">
+                                    <tbody id="deliveryBody">
+                                        @*<tr>
+                                                <td class="w-30">
+                                                    27/02/2023
+                                                </td>
+                                                <td>
+                                                    <div class="text-start">
+                                                        <p class="text-xs font-weight-bold mb-0">Mohamed Salihu</p>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="text-center">
+                                                        <h6 class="text-sm mb-0">15</h6>
+                                                    </div>
+                                                </td>
+                                            </tr>*@
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="../Content/assets/js/jquery-3.6.3.min.js"></script>
+    <script src="../Content/assets/js/app-data.js"></script>
+    <script src="../Content/assets/js/lang.js"></script>
+    <script src="../Content/assets/js/site.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+
+            $('html').attr('lang', $('#hdnLang').val());
+            $('html').attr('dir', $('#hdnDir').val());
+
+            $('#reportBody').empty();
+
+            $('#crmonthsales').text("");
+            $('#crmonthorder').text("");
+
+            $('#todaysales').text("");
+            $('#todayorder').text("");
+
+
+
+            $.ajax({
+                type: "GET",
+                url: appBaseUrl + "apireport/daily",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+
+                    var jobj = JSON.parse(response);
+                    var rptList = (jobj.reportInfo);
+                    var rpt = jobj.reportTtotalInfo;
+                    var dvInfo = jobj.deliveryInfo;
+
+                    for (var i = 0; i < rptList.length; i++) {
+
+                        var td = `<tr>
+                                        <td class="w-30">
+                                            {createdon}
+                                        </td>
+                                        <td>
+                                            <div class="text-start">
+                                                <p class="text-xs font-weight-bold mb-0">{Name}</p>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="text-center">
+                                                <h6 class="text-sm mb-0">{orders}</h6>
+                                            </div>
+                                        </td>
+                                    </tr>`;
+
+
+                        td = td.replace('{Name}', rptList[i].Name);
+                        td = td.replace('{createdon}', rptList[i].CreatedOn);
+                        td = td.replace('{orders}', rptList[i].CreatedOrders);
+
+
+                        $('#reportBody').append(td);
+
+                    }
+
+                    if (dvInfo.length > 0) {
+
+                        $('#deliveryBody').append("<tr>        <td><strong>Name</strong></td><td><strong>TotalOrder</strong></td><td><strong>Pending</strong></td><td><strong>Completed</strong></td><td><strong>Cancelled</strong></td>        </tr>");
+                    }
+
+                    for (var i = 0; i < dvInfo.length; i++) {
+
+                        var td = `<tr>
+                                        <td class="w-30">
+                                            {FirstName}
+                                        </td>
+                                        <td>
+                                            <div class="text-start">
+                                                <p class="text-xs font-weight-bold mb-0">{TotalOrder}</p>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="text-center">
+                                                <h6 class="text-sm mb-0">{Pending}</h6>
+                                            </div>
+                                        </td>
+<td>
+                                            <div class="text-center">
+                                                <h6 class="text-sm mb-0">{Completed}</h6>
+                                            </div>
+                                        </td>
+<td>
+                                            <div class="text-center">
+                                                <h6 class="text-sm mb-0">{Cancelled}</h6>
+                                            </div>
+                                        </td>
+                                    </tr>`;
+
+
+                        td = td.replace('{FirstName}', dvInfo[i].FirstName);
+                        td = td.replace('{TotalOrder}', dvInfo[i].TotalOrder);
+                        td = td.replace('{Pending}', dvInfo[i].Pending);
+                        td = td.replace('{Completed}', dvInfo[i].Completed);
+                        td = td.replace('{Cancelled}', dvInfo[i].Cancelled);
+
+
+                        $('#deliveryBody').append(td);
+
+                    }
+
+
+
+                    $('#crmonthsales').text(rpt.MonthlySales + " KWD ");
+                    $('#crmonthorder').text(rpt.MonthlyOrders);
+
+                    $('#todaysales').text(rpt.TodaySales + " KWD ");
+                    $('#todayorder').text(rpt.TodayOrders);
+
+
+
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                    alert("Failure");
+                },
+                error: function (response) {
+                    alert(response);
+                    alert("Error");
+                }
+            });
+
+
+
+
+
+
+        });
+
+
+
+    </script>
+
+</body>
+</html>

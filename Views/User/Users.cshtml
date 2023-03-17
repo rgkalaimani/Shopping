@@ -1,0 +1,309 @@
+﻿
+@model List<ShoppingApplication.Models.Datamodel.UserProfile>
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Views/Shared/_ShoppingLayout.cshtml";
+}
+
+<script src="~/Scripts/appsettings.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $('#btnSave').click(function () {
+
+
+            
+
+            if ($('#txtFirstName').val().length == 0) {
+                alert("Enter First Name");
+                return false;
+            }
+
+
+            if ($('#txtLastName').val().length == 0) {
+                alert("Enter Last Name");
+                return false;
+            }
+
+
+            if ($('#txtUserName').val().length == 0) {
+                alert("Enter User Name");
+                return false;
+            }
+
+            if ($('#txtPassword').val().length == 0) {
+                alert("Enter Password");
+                return false;
+            }
+
+            if ($('#optUserType').val() == "--") {
+                alert("Select User Type");
+                return false;
+            }
+
+
+            var userInfo = {
+                "FirstName": $('#txtFirstName').val(),
+                "LastName": $("#txtLastName").val(),
+                "UserName": $("#txtUserName").val(),
+                "UserType": $("#optUserType").val(),
+                "Password": $("#txtPassword").val(),
+                "Id": $("#appCurrentUserId").val()
+            };
+
+            
+
+            
+
+            $.ajax({
+                type: "POST",
+                url: appBaseUrl + "apiuser/create",
+                data: JSON.stringify(userInfo),// now data come in this function
+                contentType: "application/json; charset=utf-8",
+                crossDomain: true,
+                dataType: "json",
+                success: function (data, status, jqXHR) {
+
+                    window.location.href = "../user/Users";
+
+                    $('#addUserForm').removeClass('show');
+                    
+                },
+
+                error: function (jqXHR, status) {
+                    // error handler
+                    console.log(jqXHR);
+                    alert('fail' + status.code);
+                }
+            });
+
+        });
+
+
+        $('.userdelete').click(function () {
+
+            var userId = $(this).attr('userid');
+
+            var userInfo = {
+                "Id": userId,
+                "CreatedBy": $('#appCurrentUserId').val()
+            };
+
+
+            $.ajax({
+                type: "POST",
+                url: appBaseUrl + "apiuser/delete",
+                data: JSON.stringify(userInfo),// now data come in this function
+                contentType: "application/json; charset=utf-8",
+                crossDomain: true,
+                dataType: "json",
+                success: function (data, status, jqXHR) {
+
+                    window.location.href = "../user/Users";
+
+                    ///  alert("success");// write success in " "
+                },
+
+                error: function (jqXHR, status) {
+                    // error handler
+                    console.log(jqXHR);
+                    alert('fail' + status.code);
+                }
+            });
+
+
+
+
+
+        });
+
+    });
+
+</script>
+
+
+<div class="container-fluid py-4">
+    <section class="">
+        <div class="card">
+            <div class="card-body">
+                <h5>Users</h5>
+
+                <div class="my-3">
+                    <div class="text-end">
+                        <button class="btn btn-dark"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#addUserForm"
+                                aria-expanded="true"
+                                aria-controls="collapseOne">
+                            Add User
+                        </button>
+                    </div>
+                    <div id="addUserForm" class="collapse">
+
+                        <div class="border rounded p-2 shadow-md">
+                            <div class="row">
+                                <div class="form-group my-2">
+                                    <label>FirstName</label>
+                                    <input type="text" id="txtFirstName" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group my-2">
+                                    <label>LastName</label>
+                                    <input type="text" id="txtLastName" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group my-2">
+                                    <label>UserName</label>
+                                    <input type="text" id="txtUserName" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group my-2">
+                                    <label>Password</label>
+                                    <input type="text" id="txtPassword" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group my-2">
+                                    <label>User Type </label>
+                                    <select id="optUserType" class="form-control">
+                                        <option value="--">--Select--</option>
+                                        <option value="Admin">Admin</option>
+                                        <option value="CallCentre">Call Centre</option>
+                                        <option value="Driver">Driver</option>
+                                        <option value="Slaughter">Slaughter</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group my-2">
+                                <input type="button" id="btnSave" class="btn btn-primary w-100" value="Submit" />
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="my-4">
+
+                        @if (Model != null)
+                        {
+
+                            <table class="table align-items-center">
+                                <tbody>
+                                    <tr class="dataRow">
+
+                                        <td>
+                                            <div>
+                                                <h5>First Name</h5>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div>
+                                                <h5>Last Name</h5>
+                                            </div>
+                                        </td>
+
+
+                                        <td>
+                                            <div>
+                                                <h5>User Name</h5>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <h5>User Type</h5>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <h5>Status</h5>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="dataRow">
+
+                                            <td>
+                                                <div>
+                                                    <p class="text-xs font-weight-bold mb-0">
+                                                        @item.FirstName
+                                                    </p>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div>
+                                                    <p class="text-xs font-weight-bold mb-0">
+                                                        @item.LastName
+                                                    </p>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div>
+                                                    <p class="text-xs font-weight-bold mb-0">
+                                                        @item.UserName
+                                                    </p>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <p class="text-xs font-weight-bold mb-0">
+                                                        @item.UserType
+                                                    </p>
+
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+
+                                                    @if (item.IsActive == true)
+                                                    {
+                                                        @*<p class="text-xs font-weight-bold mb-0">
+                                                Active User
+                                            </p>*@
+
+                                                        <input type="button" class="btn btn-secondary btn-sm   useredit" userid=" @item.Id" value="Edit" />
+
+                                                        <input type="button" class="btn btn-danger btn-sm userdelete" userid=" @item.Id" value="Delete" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            Deactivated
+                                                        </p>
+                                                    }
+
+                                                </div>
+                                            </td>
+
+
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+
+                        }
+                    </div>
+
+                </div>
+            </div>
+    </section>
+</div>
+
+
+
+
