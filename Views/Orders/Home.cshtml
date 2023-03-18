@@ -30,6 +30,8 @@
     <script>
         $(document).ready(function () {
 
+
+
             $('#printDiv').hide();
             $('#divamountdetail').hide();
 
@@ -81,6 +83,7 @@
                 //$('#divOrderTotal').hide();
                 $('#divOrderTotal').empty();
                 $('#divDelivery').hide();
+                $('#divamountdetail').hide();
 
 
                 if (divname === "all") {
@@ -103,7 +106,7 @@
 
 
             $('.dataRow2').click(function () {
-                console.log(this);
+                //  console.log(this);
 
                 var oId = $(this).attr("orderid");
 
@@ -127,7 +130,7 @@
 
 
 
-                        console.log(orderInfo);
+                        // console.log(orderInfo);
                         var totalAmount = "";
 
                         $("#divorderItem").empty();
@@ -164,6 +167,7 @@
 
                         }
 
+
                         $("#divDelAddr").empty();
                         $('#divDelAddr').append(delivery.Address);
                         //  $('#divDelAddr').append("<div>" + delivery.ContactNumber + "</div>div>" + delivery.Email + "</div > ");
@@ -179,6 +183,11 @@
                         $('#divorderItem').show();
                         $('#divOrderTotal').show();
                         $('#divDelivery').show();
+
+
+
+                        $('#divOrderStatus').text(delivery.Status);
+
                         //  $("#divOrderTotal").show();
 
                     },
@@ -217,7 +226,7 @@
     </script>
 </head>
 <body>
-    
+
     <div>
         <input type="hidden" id="hdncancelclicked" value="0" />
 
@@ -469,11 +478,11 @@
 
                             </div>
                             @*<div id="divOrderTotal" class="d-flex justify-content-between my-5 pb-3 text-dark">*@
-                                <div id="divOrderTotal" class="p-2">
-                                    @*<div><strong>Total</strong></div>
-            <div><strong>KWD 2.000</strong></div>*@
-                                </div>
+                            <div id="divOrderTotal" class="p-2">
+                                @*<div><strong>Total</strong></div>
+                                    <div><strong>KWD 2.000</strong></div>*@
                             </div>
+                        </div>
 
                         <div id="divDelivery" class="col-12 col-md-6 bg-light rounded">
                             <div class="p-2">
@@ -544,7 +553,7 @@
                                         <h5 class="mb-2">
                                             Status
                                         </h5>
-                                        <div class="badge bg-success">Delivered</div>
+                                        <div class="badge bg-success" id="divOrderStatus"></div>
                                         <div class="form-check">
 
                                             <input type="button" value="print" id="btnReceiptPrint" productid="" />

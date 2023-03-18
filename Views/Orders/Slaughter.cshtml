@@ -14,19 +14,27 @@
 </head>
 <script type="text/javascript">
 
-    $('html').attr('lang', $('#hdnLang').val());
-    $('html').attr('dir', $('#hdnDir').val());
+    $(document).ready(function () {
 
-    $(function () {
-        $("#btnSubmit").click(function () {
-            /// window.open("http://localhost:50174/orders/export");
-            //window.print();
+        $('#liPageName').text('Order');
+        $('#h6PageName').text('Slaughter');
 
-            //$('.popup-content').addClass('active');
-            window.open(host + "/Orders/slaughterprint");
+        $('html').attr('lang', $('#hdnLang').val());
+        $('html').attr('dir', $('#hdnDir').val());
 
+        $(function () {
+
+            $("#btnSubmit").click(function () {
+                /// window.open("http://localhost:50174/orders/export");
+                //window.print();
+
+                //$('.popup-content').addClass('active');
+                window.open(host + "/Orders/slaughterprint");
+
+            });
         });
     });
+
 </script>
 
 <style>

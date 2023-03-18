@@ -48,14 +48,16 @@ namespace ShoppingAPI.Controllers
         public ActionResult ChangeLanguage(string lang)
         {
             Session["lang"] = lang;
-            return RedirectToAction("login", ConfigurationManager.AppSettings["domainurl"].ToString()+"User");//, new { language = lang });
+            return RedirectToAction("login",  "User");//, new { language = lang });
         }
 
         public ActionResult Users()
         {
 
+
+            Session["page"] = "User";
             List<Datamodel.UserProfile> userList = new List<Datamodel.UserProfile>();
-            UserInfoDdata obj = new UserInfoDdata();
+            UserInfoData obj = new UserInfoData();
             ShoppingDatabase db = new ShoppingDatabase();
             List<KeyValuePair<string, string>> lst = new List<KeyValuePair<string, string>>();
 
@@ -77,28 +79,32 @@ namespace ShoppingAPI.Controllers
 
         public ActionResult Logout()
         {
-            Response.Cache.SetCacheability(HttpCacheability.NoCache);
-            Response.Cache.SetExpires(DateTime.Now.AddSeconds(-1));
-            Response.Cache.SetNoStore();
-
-            string lang = Session["txtlang"].ToString();
-            string dir = Session["txtdir"].ToString();
-
-            if (Session["lang"] != null)
+            try
             {
-                if (Session["lang"].ToString().ToLower() == "ar")
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Cache.SetExpires(DateTime.Now.AddSeconds(-1));
+                Response.Cache.SetNoStore();
+
+                string lang = Session["txtlang"].ToString();
+                string dir = Session["txtdir"].ToString();
+
+                if (Session["lang"] != null)
                 {
-                    Session["txtdir"] = "rtl";
-                    Session["txtlang"] = "ar";
+                    if (Session["lang"].ToString().ToLower() == "ar")
+                    {
+                        Session["txtdir"] = "rtl";
+                        Session["txtlang"] = "ar";
+                    }
                 }
+
+                Session.RemoveAll();
+
+                Session["txtdir"] = dir;
+                Session["txtlang"] = lang;
             }
+            catch (Exception ex) { }
 
-            Session.RemoveAll();
-            
-            Session["txtdir"] = dir;
-            Session["txtlang"] = lang;
-
-            return RedirectToAction("login", ConfigurationManager.AppSettings["domainurl"].ToString() + "user");
+            return RedirectToAction("login", "user");
         }
 
         [HttpPost]
@@ -146,24 +152,24 @@ namespace ShoppingAPI.Controllers
                             objProfile.UserRole = role;
                             Session["UserProfile"] = objProfile;
 
-                            var domainurl = ConfigurationManager.AppSettings["domainurl"].ToString();
+
 
                             if (role == "admin")
                             {
 
-                                return RedirectToAction("home", domainurl + "orders");
+                                return RedirectToAction("home", "orders");
                             }
                             else if (role == "callcentre")
                             {
-                                return RedirectToAction("order", domainurl + "orders");
+                                return RedirectToAction("order", "orders");
                             }
                             else if (role == "driver")
                             {
-                                return RedirectToAction("delivery", domainurl + "orders");
+                                return RedirectToAction("delivery", "orders");
                             }
                             else if (role == "slaughter")
                             {
-                                return RedirectToAction("slaughter", domainurl + "orders");
+                                return RedirectToAction("slaughter", "orders");
                             }
                             else
                             {

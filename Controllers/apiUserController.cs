@@ -32,16 +32,68 @@ namespace ShoppingAPI.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/<controller>/5
+        [HttpGet]
+        [Route("getbyid/{id}")]
         public string Get(int id)
         {
-            return "value";
+            ApiResult api = new ApiResult();
+            UserInfoData obj = new UserInfoData();
+            List<ShoppingApplication.Models.Datamodel.UserProfile> userList = new List<ShoppingApplication.Models.Datamodel.UserProfile>();
+
+            db = new ShoppingDatabase();
+            List<KeyValuePair<string, string>> listUserinfo = new List<KeyValuePair<string, string>>();
+            listUserinfo.Add(new KeyValuePair<string, string>("@Type", "get"));
+            listUserinfo.Add(new KeyValuePair<string, string>("@Id", id.ToString()));            
+
+            ds = db.ExecuteProcedure("SP_UserInfo", listUserinfo);
+
+            if (ds != null)
+            {
+
+                userList = obj.ConvertToUsersList(ds.Tables[0]);
+                if (userList.Count > 0)
+                {
+                    api.userinfo = userList[0];
+                    api.id = userList[0].Id.ToString();
+                    if (Convert.ToInt32(api.id) > 0)
+                    {
+                        api.result = Resources.Global.Success;
+                    }
+                    else
+                    {
+                        api.result = Resources.Global.Usernamtaken;
+                    }
+                }
+                else
+                {
+                    api.userinfo = null;
+                    api.id = "0";
+                    api.result = Resources.Global.Usernamtaken;
+                }
+
+            }
+            else
+            {
+                api.userinfo = null;
+                api.id = "0";
+                api.result = Resources.Global.ErrorOccured;
+            }
+
+
+            var jsonString = JsonConvert.SerializeObject(api);
+
+            return jsonString;
+
         }
 
         [HttpPost]
         [Route("create")]
         public string Create([FromBody] UserProfile objUser)
         {
+            
+            ApiResult api = new ApiResult();
+            UserInfoData obj = new UserInfoData();
+            List<ShoppingApplication.Models.Datamodel.UserProfile> userList = new List<ShoppingApplication.Models.Datamodel.UserProfile>();
 
             db = new ShoppingDatabase();
             List<KeyValuePair<string, string>> listUserinfo = new List<KeyValuePair<string, string>>();
@@ -57,12 +109,41 @@ namespace ShoppingAPI.Controllers
             ds = db.ExecuteProcedure("SP_UserInfo", listUserinfo);
             if (ds != null)
             {
-                return ds.Tables[0].Rows[0]["Id"].ToString();
+
+                userList = obj.ConvertToUsersList(ds.Tables[0]);
+                if (userList.Count > 0)
+                {
+                    api.userinfo = userList[0];
+                    api.id = userList[0].Id.ToString();
+                    if (Convert.ToInt32(api.id) > 0)
+                    {
+                        api.result = Resources.Global.Success;
+                    }
+                    else
+                    {
+                        api.result = Resources.Global.Usernamtaken;
+                    }
+                }
+                else
+                {
+                    api.userinfo = null;
+                    api.id = "0";
+                    api.result = Resources.Global.Usernamtaken;
+                }
+
             }
             else
             {
-                return "0";
+                api.userinfo = null;
+                api.id = "0";
+                api.result = Resources.Global.ErrorOccured;
             }
+
+
+            var jsonString = JsonConvert.SerializeObject(api);
+
+            return jsonString;
+
 
         }
 
@@ -70,6 +151,10 @@ namespace ShoppingAPI.Controllers
         [Route("update")]
         public string post([FromBody] UserProfile objUser)
         {
+            ApiResult api = new ApiResult();
+            UserInfoData obj = new UserInfoData();
+            List<ShoppingApplication.Models.Datamodel.UserProfile> userList = new List<ShoppingApplication.Models.Datamodel.UserProfile>();
+
             db = new ShoppingDatabase();
             List<KeyValuePair<string, string>> listUserinfo = new List<KeyValuePair<string, string>>();
             listUserinfo.Add(new KeyValuePair<string, string>("@Type", "update"));
@@ -84,35 +169,93 @@ namespace ShoppingAPI.Controllers
             ds = db.ExecuteProcedure("SP_UserInfo", listUserinfo);
             if (ds != null)
             {
-                return ds.Tables[0].Rows[0]["Id"].ToString();
+
+                userList = obj.ConvertToUsersList(ds.Tables[0]);
+                if (userList.Count > 0)
+                {
+                    api.userinfo = userList[0];
+                    api.id = userList[0].Id.ToString();
+                    if (Convert.ToInt32(api.id) > 0)
+                    {
+                        api.result = Resources.Global.Success;
+                    }
+                    else
+                    {
+                        api.result = Resources.Global.ErrorOccured;
+                    }
+                }
+                else
+                {
+                    api.userinfo = null;
+                    api.id = "0";
+                    api.result = Resources.Global.ErrorOccured;
+                }
+
             }
             else
             {
-                return "0";
+                api.userinfo = null;
+                api.id = "0";
+                api.result = Resources.Global.ErrorOccured;
             }
 
+
+            var jsonString = JsonConvert.SerializeObject(api);
+
+            return jsonString;
         }
 
         [HttpPost]
         [Route("delete")]
         public string Delete([FromBody] UserProfile objUser)
         {
+            ApiResult api = new ApiResult();
+            UserInfoData obj = new UserInfoData();
+            List<ShoppingApplication.Models.Datamodel.UserProfile> userList = new List<ShoppingApplication.Models.Datamodel.UserProfile>();
 
             db = new ShoppingDatabase();
             List<KeyValuePair<string, string>> listUserinfo = new List<KeyValuePair<string, string>>();
             listUserinfo.Add(new KeyValuePair<string, string>("@Type", "delete"));
-            listUserinfo.Add(new KeyValuePair<string, string>("@Id", Convert.ToString(objUser.Id)));            
+            listUserinfo.Add(new KeyValuePair<string, string>("@Id", Convert.ToString(objUser.Id)));
             listUserinfo.Add(new KeyValuePair<string, string>("@CreatedBy", objUser.CreatedBy.ToString()));
 
             ds = db.ExecuteProcedure("SP_UserInfo", listUserinfo);
             if (ds != null)
             {
-                return ds.Tables[0].Rows[0]["Id"].ToString();
+
+                userList = obj.ConvertToUsersList(ds.Tables[0]);
+                if (userList.Count > 0)
+                {
+                    api.userinfo = userList[0];
+                    api.id = userList[0].Id.ToString();
+                    if (Convert.ToInt32(api.id) > 0)
+                    {
+                        api.result = Resources.Global.Success;
+                    }
+                    else
+                    {
+                        api.result = Resources.Global.ErrorOccured;
+                    }
+                }
+                else
+                {
+                    api.userinfo = null;
+                    api.id = "0";
+                    api.result = Resources.Global.ErrorOccured;
+                }
+
             }
             else
             {
-                return "0";
+                api.userinfo = null;
+                api.id = "0";
+                api.result = Resources.Global.ErrorOccured;
             }
+
+
+            var jsonString = JsonConvert.SerializeObject(api);
+
+            return jsonString;
 
         }
     }

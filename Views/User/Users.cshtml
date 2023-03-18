@@ -9,9 +9,17 @@
 <script>
     $(document).ready(function () {
 
+        $('#liPageName').text('User');
+        $('#h6PageName').text('Users');
+
         $('#btnSave').click(function () {
 
 
+            var apiurl = appBaseUrl + "apiuser/create";
+
+            if ($('#btnSave').val() == "Update") {
+                apiurl = appBaseUrl + "apiuser/update";             
+            }
             
 
             if ($('#txtFirstName').val().length == 0) {
@@ -36,11 +44,17 @@
                 return false;
             }
 
+            if ($('#txtPassword').val() != $('#txtPassword1').val()) {
+                alert("Password is not Matching");
+                return false;
+            }
+
             if ($('#optUserType').val() == "--") {
                 alert("Select User Type");
                 return false;
             }
 
+            
 
             var userInfo = {
                 "FirstName": $('#txtFirstName').val(),
@@ -51,23 +65,31 @@
                 "Id": $("#appCurrentUserId").val()
             };
 
-            
 
-            
+            if($('#btnSave').val() == "Update") {
+                
+                userInfo.UserName = $('#btnSave').attr('user');
+            }
+
+                        
 
             $.ajax({
                 type: "POST",
-                url: appBaseUrl + "apiuser/create",
+                url: apiurl,
                 data: JSON.stringify(userInfo),// now data come in this function
                 contentType: "application/json; charset=utf-8",
                 crossDomain: true,
                 dataType: "json",
                 success: function (data, status, jqXHR) {
+                    var res = JSON.parse(data);
 
-                    window.location.href = "../user/Users";
+                    console.log(res);
 
-                    $('#addUserForm').removeClass('show');
-                    
+                    alert(res.result);
+
+                    if (parseInt(res.id) > 0) {
+                        window.location.href = "../user/Users";
+                    }
                 },
 
                 error: function (jqXHR, status) {
@@ -76,9 +98,54 @@
                     alert('fail' + status.code);
                 }
             });
+            
 
         });
 
+
+
+        $('.useredit').click(function () {
+
+
+            $.ajax({
+                type: "GET",
+                url: appBaseUrl + "apiuser/getbyid/" + $(this).attr('userid'),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var userd = JSON.parse(response);
+
+                    var userdata = userd.userinfo;
+                    //Id
+                    //CreatedBy
+
+                    
+
+                    $('#txtFirstName').val(userdata.FirstName);
+                    $('#txtLastName').val(userdata.LastName);
+                    $('#txtUserName').val(userdata.UserName);
+                    $('#txtPassword').val(userdata.Password);
+                    $('#optUserType').val(userdata.UserType);
+
+                    $('#btnSave').val('Update');
+
+                    $('#btnSave').attr('user', userdata.UserName);
+                    $('#txtUserName').attr('readonly', 'readonly');
+
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                    alert("Failure");
+                },
+                error: function (response) {
+                    alert(response);
+                    alert("Error");
+                }
+            });
+
+
+
+        });
 
         $('.userdelete').click(function () {
 
@@ -123,6 +190,7 @@
 
 
 <div class="container-fluid py-4">
+    <input type="hidden" id="hdnUserName" />
     <section class="">
         <div class="card">
             <div class="card-body">
@@ -166,7 +234,13 @@
                             <div class="row">
                                 <div class="form-group my-2">
                                     <label>Password</label>
-                                    <input type="text" id="txtPassword" class="form-control" />
+                                    <input type="password" id="txtPassword" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group my-2">
+                                    <label>Confirm Password</label>
+                                    <input type="password" id="txtPassword1" class="form-control" />
                                 </div>
                             </div>
 
@@ -271,10 +345,13 @@
                                                     @if (item.IsActive == true)
                                                     {
                                                         @*<p class="text-xs font-weight-bold mb-0">
-                                                Active User
-                                            </p>*@
+                                                                Active User
+                                                            </p>*@
 
-                                                        <input type="button" class="btn btn-secondary btn-sm   useredit" userid=" @item.Id" value="Edit" />
+                                                        <input type="button" data-bs-toggle="collapse"
+                                                               data-bs-target="#addUserForm"
+                                                               aria-expanded="true"
+                                                               aria-controls="collapseOne" class="btn btn-secondary btn-sm   useredit" userid=" @item.Id" value="Edit" />
 
                                                         <input type="button" class="btn btn-danger btn-sm userdelete" userid=" @item.Id" value="Delete" />
                                                     }
@@ -301,6 +378,7 @@
 
                 </div>
             </div>
+        </div>
     </section>
 </div>
 
